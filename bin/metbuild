@@ -1,0 +1,6 @@
+#!/bin/bash
+
+colcon build --symlink-install
+source ~/.bashrc
+
+
