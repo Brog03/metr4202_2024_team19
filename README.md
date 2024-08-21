@@ -15,6 +15,8 @@ amaana hussain - 4582775
 
 Ngo Sen Lui - 47266641
 
+Ole Fjeld Haugstvedt - 402216998
+
 
 ## Setting up this repo ##
 WSL (Windows Subsystem linux):
