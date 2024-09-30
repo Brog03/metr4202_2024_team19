@@ -1,0 +1,152 @@
+[0.306s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--packages-select', 'nav2_wfd']
+[0.307s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=8, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['nav2_wfd'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x7f8f57b42b00>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7f8f57b42560>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7f8f57b42560>>, mixin_verb=('build',))
+[0.608s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.609s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.609s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.609s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.609s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.609s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.609s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/brog/metr4202/metr4202_ws'
+[0.609s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.609s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.610s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.610s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.610s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.610s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.610s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.610s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.610s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.634s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.634s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.635s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.635s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.635s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.635s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.635s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.635s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.636s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.636s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.636s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.636s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.636s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.636s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.636s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.637s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extensions ['ignore', 'ignore_ament_install']
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extension 'ignore'
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extension 'ignore_ament_install'
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extensions ['colcon_pkg']
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extension 'colcon_pkg'
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extensions ['colcon_meta']
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extension 'colcon_meta'
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extensions ['ros']
+[0.638s] Level 1:colcon.colcon_core.package_identification:_identify(src/map_explorer) by extension 'ros'
+[0.643s] DEBUG:colcon.colcon_core.package_identification:Package 'src/map_explorer' with type 'ros.ament_python' and name 'map_explorer'
+[0.643s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extensions ['ignore', 'ignore_ament_install']
+[0.643s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extension 'ignore'
+[0.643s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extension 'ignore_ament_install'
+[0.644s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extensions ['colcon_pkg']
+[0.644s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extension 'colcon_pkg'
+[0.644s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extensions ['colcon_meta']
+[0.644s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extension 'colcon_meta'
+[0.644s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extensions ['ros']
+[0.644s] Level 1:colcon.colcon_core.package_identification:_identify(src/nav2_wavefront_frontier_exploration) by extension 'ros'
+[0.645s] DEBUG:colcon.colcon_core.package_identification:Package 'src/nav2_wavefront_frontier_exploration' with type 'ros.ament_python' and name 'nav2_wfd'
+[0.645s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extensions ['ignore', 'ignore_ament_install']
+[0.646s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extension 'ignore'
+[0.646s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extension 'ignore_ament_install'
+[0.646s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extensions ['colcon_pkg']
+[0.646s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extension 'colcon_pkg'
+[0.646s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extensions ['colcon_meta']
+[0.647s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extension 'colcon_meta'
+[0.647s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extensions ['ros']
+[0.647s] Level 1:colcon.colcon_core.package_identification:_identify(src/waypoint_commander) by extension 'ros'
+[0.648s] DEBUG:colcon.colcon_core.package_identification:Package 'src/waypoint_commander' with type 'ros.ament_python' and name 'waypoint_commander'
+[0.648s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.648s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.649s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.649s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.649s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.690s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'map_explorer' in 'src/map_explorer'
+[0.690s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'waypoint_commander' in 'src/waypoint_commander'
+[0.691s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.691s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.695s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 3 installed packages in /home/brog/metr4202/metr4202_ws/install
+[0.696s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 15 installed packages in /home/brog/metr4202/turtlebot3_ws/install
+[0.699s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 363 installed packages in /opt/ros/humble
+[0.728s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'cmake_args' from command line to 'None'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'cmake_target' from command line to 'None'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'cmake_clean_cache' from command line to 'False'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'cmake_clean_first' from command line to 'False'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'cmake_force_configure' from command line to 'False'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'ament_cmake_args' from command line to 'None'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'catkin_cmake_args' from command line to 'None'
+[0.834s] Level 5:colcon.colcon_core.verb:set package 'nav2_wfd' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.834s] DEBUG:colcon.colcon_core.verb:Building package 'nav2_wfd' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/brog/metr4202/metr4202_ws/build/nav2_wfd', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/brog/metr4202/metr4202_ws/install/nav2_wfd', 'merge_install': False, 'path': '/home/brog/metr4202/metr4202_ws/src/nav2_wavefront_frontier_exploration', 'symlink_install': False, 'test_result_base': None}
+[0.834s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.836s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.836s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/brog/metr4202/metr4202_ws/src/nav2_wavefront_frontier_exploration' with build type 'ament_python'
+[0.837s] Level 1:colcon.colcon_core.shell:create_environment_hook('nav2_wfd', 'ament_prefix_path')
+[0.843s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.843s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/hook/ament_prefix_path.ps1'
+[0.846s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/hook/ament_prefix_path.dsv'
+[0.848s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/hook/ament_prefix_path.sh'
+[0.849s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.850s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.477s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/brog/metr4202/metr4202_ws/src/nav2_wavefront_frontier_exploration'
+[1.478s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.478s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.300s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/brog/metr4202/metr4202_ws/src/nav2_wavefront_frontier_exploration': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/nav2_wfd/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/nav2_wfd build --build-base /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build install --record /home/brog/metr4202/metr4202_ws/build/nav2_wfd/install.log --install-scripts $base/lib/nav2_wfd --single-version-externally-managed install_data
+[2.915s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/brog/metr4202/metr4202_ws/src/nav2_wavefront_frontier_exploration' returned '0': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/nav2_wfd/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/nav2_wfd build --build-base /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build install --record /home/brog/metr4202/metr4202_ws/build/nav2_wfd/install.log --install-scripts $base/lib/nav2_wfd --single-version-externally-managed install_data
+[2.918s] Level 1:colcon.colcon_core.environment:checking '/home/brog/metr4202/metr4202_ws/install/nav2_wfd' for CMake module files
+[2.919s] Level 1:colcon.colcon_core.environment:checking '/home/brog/metr4202/metr4202_ws/install/nav2_wfd' for CMake config files
+[2.920s] Level 1:colcon.colcon_core.environment:checking '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib'
+[2.920s] Level 1:colcon.colcon_core.environment:checking '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/bin'
+[2.920s] Level 1:colcon.colcon_core.environment:checking '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/pkgconfig/nav2_wfd.pc'
+[2.920s] Level 1:colcon.colcon_core.environment:checking '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages'
+[2.921s] Level 1:colcon.colcon_core.shell:create_environment_hook('nav2_wfd', 'pythonpath')
+[2.921s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/hook/pythonpath.ps1'
+[2.921s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/hook/pythonpath.dsv'
+[2.922s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/hook/pythonpath.sh'
+[2.923s] Level 1:colcon.colcon_core.environment:checking '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/bin'
+[2.923s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(nav2_wfd)
+[2.924s] INFO:colcon.colcon_core.shell:Creating package script '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/package.ps1'
+[2.925s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/package.dsv'
+[2.928s] INFO:colcon.colcon_core.shell:Creating package script '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/package.sh'
+[2.930s] INFO:colcon.colcon_core.shell:Creating package script '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/package.bash'
+[2.932s] INFO:colcon.colcon_core.shell:Creating package script '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd/package.zsh'
+[2.934s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/colcon-core/packages/nav2_wfd)
+[2.934s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[2.936s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[2.937s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[2.937s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[3.008s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[3.009s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[3.009s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[3.009s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[3.009s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.FileNotFound: Failed to connect to socket /run/user/1000/bus: No such file or directory
+[3.009s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[3.010s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/brog/metr4202/metr4202_ws/install/local_setup.ps1'
+[3.012s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/brog/metr4202/metr4202_ws/install/_local_setup_util_ps1.py'
+[3.014s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/brog/metr4202/metr4202_ws/install/setup.ps1'
+[3.018s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/brog/metr4202/metr4202_ws/install/local_setup.sh'
+[3.019s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/brog/metr4202/metr4202_ws/install/_local_setup_util_sh.py'
+[3.020s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/brog/metr4202/metr4202_ws/install/setup.sh'
+[3.023s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/brog/metr4202/metr4202_ws/install/local_setup.bash'
+[3.024s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/brog/metr4202/metr4202_ws/install/setup.bash'
+[3.028s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/brog/metr4202/metr4202_ws/install/local_setup.zsh'
+[3.029s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/brog/metr4202/metr4202_ws/install/setup.zsh'

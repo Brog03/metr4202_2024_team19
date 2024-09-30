@@ -1,0 +1,3 @@
+[console_scripts]
+map_explorer = map_explorer.map_explorer:main
+

@@ -1,0 +1,32 @@
+[1.461s] Invoking command in '/home/brog/metr4202/metr4202_ws/src/nav2_wavefront_frontier_exploration': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/nav2_wfd/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/nav2_wfd build --build-base /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build install --record /home/brog/metr4202/metr4202_ws/build/nav2_wfd/install.log --install-scripts $base/lib/nav2_wfd --single-version-externally-managed install_data
+[1.935s] /usr/lib/python3/dist-packages/setuptools/dist.py:723: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[1.936s]   warnings.warn(
+[1.952s] running egg_info
+[1.953s] writing ../../build/nav2_wfd/nav2_wfd.egg-info/PKG-INFO
+[1.954s] writing dependency_links to ../../build/nav2_wfd/nav2_wfd.egg-info/dependency_links.txt
+[1.954s] writing entry points to ../../build/nav2_wfd/nav2_wfd.egg-info/entry_points.txt
+[1.955s] writing requirements to ../../build/nav2_wfd/nav2_wfd.egg-info/requires.txt
+[1.955s] writing top-level names to ../../build/nav2_wfd/nav2_wfd.egg-info/top_level.txt
+[1.961s] reading manifest file '../../build/nav2_wfd/nav2_wfd.egg-info/SOURCES.txt'
+[1.962s] adding license file 'LICENSE'
+[1.963s] writing manifest file '../../build/nav2_wfd/nav2_wfd.egg-info/SOURCES.txt'
+[1.964s] running build
+[1.964s] running build_py
+[1.964s] copying nav2_wfd/__init__.py -> /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build/lib/nav2_wfd
+[1.964s] copying nav2_wfd/wavefront_frontier.py -> /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build/lib/nav2_wfd
+[1.965s] running install
+[1.965s] running install_lib
+[1.967s] copying /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build/lib/nav2_wfd/__init__.py -> /home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages/nav2_wfd
+[1.968s] copying /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build/lib/nav2_wfd/wavefront_frontier.py -> /home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages/nav2_wfd
+[1.969s] byte-compiling /home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages/nav2_wfd/__init__.py to __init__.cpython-310.pyc
+[1.969s] byte-compiling /home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages/nav2_wfd/wavefront_frontier.py to wavefront_frontier.cpython-310.pyc
+[1.975s] running install_data
+[1.976s] copying resource/nav2_wfd -> /home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/ament_index/resource_index/packages
+[1.976s] copying package.xml -> /home/brog/metr4202/metr4202_ws/install/nav2_wfd/share/nav2_wfd
+[1.976s] running install_egg_info
+[1.980s] removing '/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages/nav2_wfd-0.0.0-py3.10.egg-info' (and everything under it)
+[1.981s] Copying ../../build/nav2_wfd/nav2_wfd.egg-info to /home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages/nav2_wfd-0.0.0-py3.10.egg-info
+[1.982s] running install_scripts
+[2.028s] Installing explore script to /home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/nav2_wfd
+[2.029s] writing list of installed files to '/home/brog/metr4202/metr4202_ws/build/nav2_wfd/install.log'
+[2.077s] Invoked command in '/home/brog/metr4202/metr4202_ws/src/nav2_wavefront_frontier_exploration' returned '0': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/nav2_wfd/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/nav2_wfd/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/nav2_wfd build --build-base /home/brog/metr4202/metr4202_ws/build/nav2_wfd/build install --record /home/brog/metr4202/metr4202_ws/build/nav2_wfd/install.log --install-scripts $base/lib/nav2_wfd --single-version-externally-managed install_data

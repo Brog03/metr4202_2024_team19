@@ -1,0 +1,19 @@
+[1.566s] Invoking command in '/home/brog/metr4202/metr4202_ws/build/waypoint_commander': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/waypoint_commander/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build --no-deps symlink_data
+[2.124s] running develop
+[2.125s] /usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+[2.125s]   warnings.warn(
+[2.432s] running egg_info
+[2.433s] writing waypoint_commander.egg-info/PKG-INFO
+[2.434s] writing dependency_links to waypoint_commander.egg-info/dependency_links.txt
+[2.435s] writing entry points to waypoint_commander.egg-info/entry_points.txt
+[2.436s] writing requirements to waypoint_commander.egg-info/requires.txt
+[2.436s] writing top-level names to waypoint_commander.egg-info/top_level.txt
+[2.439s] reading manifest file 'waypoint_commander.egg-info/SOURCES.txt'
+[2.440s] writing manifest file 'waypoint_commander.egg-info/SOURCES.txt'
+[2.443s] running build_ext
+[2.443s] Creating /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint-commander.egg-link (link to .)
+[2.445s] Installing waypoint_cycler script to /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/waypoint_commander
+[2.446s] 
+[2.446s] Installed /home/brog/metr4202/metr4202_ws/build/waypoint_commander
+[2.446s] running symlink_data
+[2.501s] Invoked command in '/home/brog/metr4202/metr4202_ws/build/waypoint_commander' returned '0': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/waypoint_commander/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build --no-deps symlink_data

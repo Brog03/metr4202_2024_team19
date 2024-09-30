@@ -1,0 +1,38 @@
+[2.329s] Invoking command in '/home/brog/metr4202/metr4202_ws/build/waypoint_commander': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/waypoint_commander/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --uninstall --editable --build-directory /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build
+[2.890s] running develop
+[2.890s] /usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+[2.890s]   warnings.warn(
+[3.228s] Removing /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint-commander.egg-link (link to .)
+[3.286s] Invoked command in '/home/brog/metr4202/metr4202_ws/build/waypoint_commander' returned '0': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/waypoint_commander/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --uninstall --editable --build-directory /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build
+[3.291s] Invoking command in '/home/brog/metr4202/metr4202_ws/src/waypoint_commander': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/waypoint_commander/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/waypoint_commander build --build-base /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build install --record /home/brog/metr4202/metr4202_ws/build/waypoint_commander/install.log --single-version-externally-managed install_data --force
+[3.765s] running egg_info
+[3.766s] writing ../../build/waypoint_commander/waypoint_commander.egg-info/PKG-INFO
+[3.766s] writing dependency_links to ../../build/waypoint_commander/waypoint_commander.egg-info/dependency_links.txt
+[3.767s] writing entry points to ../../build/waypoint_commander/waypoint_commander.egg-info/entry_points.txt
+[3.767s] writing requirements to ../../build/waypoint_commander/waypoint_commander.egg-info/requires.txt
+[3.768s] writing top-level names to ../../build/waypoint_commander/waypoint_commander.egg-info/top_level.txt
+[3.771s] reading manifest file '../../build/waypoint_commander/waypoint_commander.egg-info/SOURCES.txt'
+[3.774s] writing manifest file '../../build/waypoint_commander/waypoint_commander.egg-info/SOURCES.txt'
+[3.774s] running build
+[3.775s] running build_py
+[3.775s] creating /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build
+[3.775s] creating /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build/lib
+[3.775s] creating /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build/lib/waypoint_commander
+[3.775s] copying waypoint_commander/waypoint_cycler.py -> /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build/lib/waypoint_commander
+[3.776s] copying waypoint_commander/__init__.py -> /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build/lib/waypoint_commander
+[3.776s] running install
+[3.777s] running install_lib
+[3.780s] creating /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint_commander
+[3.780s] copying /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build/lib/waypoint_commander/waypoint_cycler.py -> /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint_commander
+[3.781s] copying /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build/lib/waypoint_commander/__init__.py -> /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint_commander
+[3.782s] byte-compiling /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint_commander/waypoint_cycler.py to waypoint_cycler.cpython-310.pyc
+[3.783s] byte-compiling /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint_commander/__init__.py to __init__.cpython-310.pyc
+[3.783s] running install_data
+[3.784s] copying resource/waypoint_commander -> /home/brog/metr4202/metr4202_ws/install/waypoint_commander/share/ament_index/resource_index/packages
+[3.785s] copying package.xml -> /home/brog/metr4202/metr4202_ws/install/waypoint_commander/share/waypoint_commander
+[3.785s] running install_egg_info
+[3.790s] Copying ../../build/waypoint_commander/waypoint_commander.egg-info to /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages/waypoint_commander-0.0.0-py3.10.egg-info
+[3.792s] running install_scripts
+[3.833s] Installing waypoint_cycler script to /home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/waypoint_commander
+[3.834s] writing list of installed files to '/home/brog/metr4202/metr4202_ws/build/waypoint_commander/install.log'
+[3.888s] Invoked command in '/home/brog/metr4202/metr4202_ws/src/waypoint_commander' returned '0': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/waypoint_commander/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/waypoint_commander/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/waypoint_commander build --build-base /home/brog/metr4202/metr4202_ws/build/waypoint_commander/build install --record /home/brog/metr4202/metr4202_ws/build/waypoint_commander/install.log --single-version-externally-managed install_data --force

@@ -1,0 +1,19 @@
+[1.324s] Invoking command in '/home/brog/metr4202/metr4202_ws/build/map_explorer': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/map_explorer/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/map_explorer/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/brog/metr4202/metr4202_ws/build/map_explorer/build --no-deps symlink_data
+[1.822s] running develop
+[1.822s] /usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+[1.822s]   warnings.warn(
+[2.122s] running egg_info
+[2.122s] writing map_explorer.egg-info/PKG-INFO
+[2.123s] writing dependency_links to map_explorer.egg-info/dependency_links.txt
+[2.123s] writing entry points to map_explorer.egg-info/entry_points.txt
+[2.123s] writing requirements to map_explorer.egg-info/requires.txt
+[2.123s] writing top-level names to map_explorer.egg-info/top_level.txt
+[2.124s] reading manifest file 'map_explorer.egg-info/SOURCES.txt'
+[2.125s] writing manifest file 'map_explorer.egg-info/SOURCES.txt'
+[2.128s] running build_ext
+[2.129s] Creating /home/brog/metr4202/metr4202_ws/install/map_explorer/lib/python3.10/site-packages/map-explorer.egg-link (link to .)
+[2.130s] Installing map_explorer script to /home/brog/metr4202/metr4202_ws/install/map_explorer/lib/map_explorer
+[2.131s] 
+[2.131s] Installed /home/brog/metr4202/metr4202_ws/build/map_explorer
+[2.131s] running symlink_data
+[2.200s] Invoked command in '/home/brog/metr4202/metr4202_ws/build/map_explorer' returned '0': PYTHONPATH=/home/brog/metr4202/metr4202_ws/build/map_explorer/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/brog/metr4202/metr4202_ws/install/map_explorer/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/brog/metr4202/metr4202_ws/build/map_explorer/build --no-deps symlink_data

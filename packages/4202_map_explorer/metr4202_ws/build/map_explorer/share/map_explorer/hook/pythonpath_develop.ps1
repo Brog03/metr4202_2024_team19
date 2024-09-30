@@ -1,0 +1,3 @@
+# generated from colcon_powershell/shell/template/hook_prepend_value.ps1.em
+
+colcon_prepend_unique_value PYTHONPATH "$env:COLCON_CURRENT_PREFIX\/home/brog/metr4202/metr4202_ws/build/map_explorer"
