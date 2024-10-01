@@ -1,4 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000422] (-) JobUnselected: {'identifier': 'map_explorer'}
-[0.000483] (-) JobUnselected: {'identifier': 'waypoint_commander'}
-[0.000782] (-) EventReactorShutdown: {}
