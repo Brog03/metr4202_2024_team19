@@ -6,6 +6,7 @@ from nav2_msgs.msg import BehaviorTreeLog
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import OccupancyGrid
+#from ros2_aruco.ros2_aruco_interfaces.msg import ArucoMarkers
 
 import numpy as np
 import math
@@ -346,6 +347,41 @@ class OccupancyGrid_Reader(object):
 
         return average/count
 
+# class ArucoMarker_Reader(object):
+#     """
+#     Subscription to the LaserScan topic
+#     """
+    
+#     subscription = None
+
+#     def __init__(self, node: Node) -> None:
+#         """
+#             Sets up a subscription to the /scan topic
+
+#             params:
+#                 node -> Node that is subscribing to the topic
+#         """
+#         self.subscription = node.create_subscription(
+#             LaserScan, 
+#             "scan",
+#             self.callback,
+#             10
+#         )
+
+#         self.subscription
+
+#     def callback(self, msg: LaserScan) -> None:
+#         """
+#             Call back for laserScan Subscription - reads the current scan data
+
+#             Params:
+#                 msg -> conatins data of the laser scan
+#         """
+#         self.data = msg.ranges
+#         self.min_angle = msg.angle_min
+#         self.max_angle = msg.angle_max
+#         self.angle_inc = msg.angle_increment
+    
 
 class Explorer(Node):
     """
@@ -397,6 +433,14 @@ class Explorer(Node):
             "goal_pose",
             10
         )
+
+        self.publisher = self.create_publisher(
+            PoseStamped,
+            "jacksTest",
+            10
+        )
+
+
 
         self.completedWaypointVectors.append(np.array([0, 0]))
 
