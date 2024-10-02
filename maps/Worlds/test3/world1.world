@@ -15,7 +15,7 @@
       <spot>
         <inner_angle>0</inner_angle>
         <outer_angle>0</outer_angle>
-        <falloff>0</falloff>
+        <falloff>0</falloff>g
       </spot>
     </light>
     <model name='ground_plane'>
