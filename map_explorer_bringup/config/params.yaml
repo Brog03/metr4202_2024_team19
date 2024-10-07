@@ -1,0 +1,4 @@
+map_explorer_name_space:
+  Explorer:
+    ros__parameters:
+      aruco_detect: False

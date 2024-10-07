@@ -1,15 +1,19 @@
 import rclpy
+import rclpy.logging
 from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped
 
+
+from geometry_msgs.msg import PoseStamped
 from nav2_msgs.msg import BehaviorTreeLog
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import OccupancyGrid
-#from ros2_aruco.ros2_aruco_interfaces.msg import ArucoMarkers
+from ros2_aruco_interfaces.msg import ArucoMarkers
 
+import time
 import numpy as np
 import math
+import os
 
 FUNCTION_HANDLE_INDEX_ARGUMENT = 3
 FUNCTION_HANDLE_INDEX = 2
@@ -37,6 +41,7 @@ class BehaviourTreeLog_Handler(object):
     """
     subscription = None
     functionHandlers = None
+    node = None
 
     def __init__(self, node: Node, functionHandlers: list[tuple[str, str]]):
         """
@@ -51,6 +56,7 @@ class BehaviourTreeLog_Handler(object):
                     ...
                 ]
         """
+        self.node = node
         self.functionHandlers = functionHandlers
 
         self.subscription = node.create_subscription(
@@ -77,6 +83,7 @@ class BehaviourTreeLog_Handler(object):
                 if event.node_name == handler[NODE_NAME_INDEX] and event.current_status == handler[NODE_STATUS_INDEX]:
                     handlerArgument = handler[FUNCTION_HANDLE_INDEX_ARGUMENT]
                     handler[FUNCTION_HANDLE_INDEX](handlerArgument)
+                
     
 
 
@@ -347,40 +354,41 @@ class OccupancyGrid_Reader(object):
 
         return average/count
 
-# class ArucoMarker_Reader(object):
-#     """
-#     Subscription to the LaserScan topic
-#     """
+class ArucoMarker_Reader(object):
+    """
+    Subscription to the LaserScan topic
+    """
     
-#     subscription = None
+    subscription = None
 
-#     def __init__(self, node: Node) -> None:
-#         """
-#             Sets up a subscription to the /scan topic
+    def __init__(self, node: Node) -> None:
+        self.wait_aruco_node_running(node)
+    
+        self.subscription = node.create_subscription(
+            ArucoMarkers, 
+            "aruco_markers",
+            self.callback,
+            10
+        )
 
-#             params:
-#                 node -> Node that is subscribing to the topic
-#         """
-#         self.subscription = node.create_subscription(
-#             LaserScan, 
-#             "scan",
-#             self.callback,
-#             10
-#         )
+        self.subscription
 
-#         self.subscription
+    def wait_aruco_node_running(self, node: Node):
+        while True:
+            aruco_marker_publishers = node.get_publishers_info_by_topic("/aruco_markers")
+            if not aruco_marker_publishers:
+                log("INFO", node, "Aruco Node not running - Trying again in 5 seconds")
+                time.sleep(5)
 
-#     def callback(self, msg: LaserScan) -> None:
-#         """
-#             Call back for laserScan Subscription - reads the current scan data
+            else:
+                publisher = aruco_marker_publishers[0]._node_name
 
-#             Params:
-#                 msg -> conatins data of the laser scan
-#         """
-#         self.data = msg.ranges
-#         self.min_angle = msg.angle_min
-#         self.max_angle = msg.angle_max
-#         self.angle_inc = msg.angle_increment
+                if publisher == "aruco_node":
+                    log("INFO", node, "Aruco Detection is Running, starting map_exporler node")
+                    break
+
+    def callback(self, msg: ArucoMarkers) -> None:
+        print(msg)
     
 
 class Explorer(Node):
@@ -400,6 +408,8 @@ class Explorer(Node):
     S_Odom = None
     S_Scan = None
     S_BehaviourTree = None
+    S_Map = None
+    S_Aruco = None
 
     waypointCounter = 0
 
@@ -414,18 +424,29 @@ class Explorer(Node):
         """
 
         super().__init__("map_explorer")
+        self.declare_parameter('aruco_detect', False)
+        
 
         # Function handlers
         FUNCTION_HANDLERS = [
             ("NavigateRecovery", "SUCCESS", self.chooseWaypoint, False), 
             ("NavigateRecovery", "FAILURE", self.chooseWaypoint, True) 
         ]   
-
         # Setup subscription
+
         self.S_Odom = Odom_Reader(self) # Setup /odom subscription
         self.S_Scan = LaserScan_Reader(self) # Setup /scan subscription
         self.S_Map = OccupancyGrid_Reader(self)
         self.S_BehaviourTree = BehaviourTreeLog_Handler(self, FUNCTION_HANDLERS) # Setup /behaviour_tree_log subscription
+        
+        aruco_detect_value = self.get_parameter('aruco_detect').get_parameter_value().bool_value
+
+        if aruco_detect_value == True:
+            log("WARN", self, "Running map_explorer with Aruco decetion")
+            self.S_Aruco = ArucoMarker_Reader(self)
+        else:
+            log("WARN", self, "Running map_explorer without Aruco decetion")
+        
 
         # Setup publishers
         self.publisher = self.create_publisher(
@@ -434,15 +455,8 @@ class Explorer(Node):
             10
         )
 
-        self.publisher = self.create_publisher(
-            PoseStamped,
-            "jacksTest",
-            10
-        )
-
-
-
         self.completedWaypointVectors.append(np.array([0, 0]))
+        log("INFO", self, "READY")
 
     def get_scan_average(self, startIndex: int, endIndex: int) -> float:
         """
@@ -554,16 +568,17 @@ class Explorer(Node):
             2) If this is not the robots first waypoint, the next waypoint must take it further away from the previous 5 waypoints
             3) If the robot cannot chose a point that satisfys 3, back track to the previous waypoint and continue 3
         """
+    
         waypoint = None
         stuck = False
 
         if previousPathFailed == True:
-            print("FAILED")
+            log("INFO", self, "FAILED")
             currentX = self.currentWaypoint.pose.position.x
             currentY = self.currentWaypoint.pose.position.y
             self.failedWaypoints.append((currentX, currentY))
         else:
-            print("SUCCESS")
+            log("INFO", self, "SUCCESS")
 
         # Robots first waypoint
         if (self.waypointCounter != 0):
@@ -611,7 +626,7 @@ class Explorer(Node):
 
         if (waypoint == None):
             # If the robot could not find any waypoints
-            print("Stuck, finding unexplored area... ", end="")
+            log("INFO", self, "Stuck, finding unexplored area... ")
             stuck = True
 
             for index in range(len(self.S_Map.get_Data())):
@@ -621,7 +636,7 @@ class Explorer(Node):
                     currentW = self.S_Odom.get_W()
                     waypoint = self.create_waypoint(x, y, currentW)
 
-                    print("Done!\n")
+                    log("INFO", self, "Done!")
                     
                     break
 
@@ -646,11 +661,16 @@ class Explorer(Node):
                 waypoint: The waypoint in which the robot will travel to
         """
 
-        print(f"Sending Waypoint: x -> {waypoint.pose.position.x:.4f}, y -> {waypoint.pose.position.y:.4f} -- Status: ", end="", flush=True)
+
+        log("INFO", self, f"Sending Waypoint: x -> {waypoint.pose.position.x:.4f}, y -> {waypoint.pose.position.y:.4f} -- Status: ")
         self.currentWaypoint = waypoint
         self.publisher.publish(waypoint)
 
-        
+def log(level:str, node:Node, message:str):
+    if level == "WARN":
+        node.get_logger().warning(message)
+    elif level == "INFO":
+        node.get_logger().info(message)
         
 
 
@@ -658,11 +678,12 @@ def main(args=None):
     """
         Entry Point
     """
+    os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] [{time}]: {message} "
+
     rclpy.init(args=args)
-
     map_explorer = Explorer()
-
     rclpy.spin(map_explorer)
+    
 
 if __name__ == "__main__":
     main()
