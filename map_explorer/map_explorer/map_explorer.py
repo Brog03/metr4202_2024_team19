@@ -5,9 +5,11 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.msg import BehaviorTreeLog
+import rclpy.subscription
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import OccupancyGrid
+
 from ros2_aruco_interfaces.msg import ArucoMarkers
 
 import time
@@ -27,21 +29,18 @@ ANGLE_WIDTH_RAD = ANGLE_WIDTH_DEG*(CONSTANT_PI/180.)
 
 NUM_DIRECTIONS = int(360/ANGLE_WIDTH_DEG)
 
-DISTANCE_STEP = 2
+DISTANCE_STEP = 1
 LASER_SCAN_MIN_RANGE = 50
 
-deg_to_rad = lambda x : x*(CONSTANT_PI/180.)
-rad_to_deg = lambda x : x*(180./CONSTANT_PI)
-
-        
+LAMBDA_deg_to_rad = lambda x : x*(CONSTANT_PI/180.)
+LAMBDA_rad_to_deg = lambda x : x*(180./CONSTANT_PI)
 
 class BehaviourTreeLog_Handler(object):
     """
     Subscription to the Behaviour Tree Log
     """
-    subscription = None
-    functionHandlers = None
-    node = None
+    subscription: rclpy.subscription = None
+    functionHandlers: list[str, str] = None
 
     def __init__(self, node: Node, functionHandlers: list[tuple[str, str]]):
         """
@@ -56,7 +55,6 @@ class BehaviourTreeLog_Handler(object):
                     ...
                 ]
         """
-        self.node = node
         self.functionHandlers = functionHandlers
 
         self.subscription = node.create_subscription(
@@ -65,8 +63,6 @@ class BehaviourTreeLog_Handler(object):
             self.callback, 
             10
         )
-
-        self.subscription
     
     def callback(self, msg: BehaviorTreeLog) -> None:
         """
@@ -87,17 +83,17 @@ class BehaviourTreeLog_Handler(object):
     
 
 
-class LaserScan_Reader(object):
+class LaserScan_Subscriber(object):
     """
     Subscription to the LaserScan topic
     """
     
     subscription = None
 
-    data = 0
-    min_angle = 0 
-    max_angle = 0
-    angle_inc = 0
+    data: list[float] = None # Scan data (meters)
+    minAngle: float = None # Scan angle lower bound (rads)
+    maxAngle: float = None # Scan angle upper bound (rads)
+    angleIncrement: float = None # Scan angle increment (rads)
 
     def __init__(self, node: Node) -> None:
         """
@@ -113,8 +109,6 @@ class LaserScan_Reader(object):
             10
         )
 
-        self.subscription
-
     def callback(self, msg: LaserScan) -> None:
         """
             Call back for laserScan Subscription - reads the current scan data
@@ -123,24 +117,25 @@ class LaserScan_Reader(object):
                 msg -> conatins data of the laser scan
         """
         self.data = msg.ranges
-        self.min_angle = msg.angle_min
-        self.max_angle = msg.angle_max
-        self.angle_inc = msg.angle_increment
+        self.minAngle = msg.angle_min
+        self.maxAngle = msg.angle_max
+        self.angleIncrement = msg.angle_increment
 
     def get_Data(self) -> list[float]:
         return self.data
         
     
-class Odom_Reader(object):
+
+class Odom_Subscriber(object):
     """
     Subscription to the Odom topic
     """
     
     subscription = None
 
-    w = 0
-    x = 0
-    y = 0
+    w: float = None # Current w (rads)
+    x: float = None # Current x (meters)
+    y: float = None # Current y (meters)
 
     def __init__(self, node: Node) -> None:
         """
@@ -155,8 +150,6 @@ class Odom_Reader(object):
             self.callback, 
             10
         )
-
-        self.subscription
     
     def __repr__(self) -> str:
         return f"x: {self.x} y: {self.y} w: {self.w}"
@@ -213,24 +206,26 @@ class Odom_Reader(object):
     def get_W(self) -> float:
         return self.w
     
-class OccupancyGrid_Reader(object):
+
+
+class OccupancyGrid_Subscriber(object):
     """
     Subscription to the LaserScan topic
     """
-    
-    subscription = None
-
-    mapData = []
-
-    resolution = None
-    startX = None
-    startY = None
-    dimX = None
-    dimY = None
 
     averageSquareSize = 5
-    endX = None
-    endY = None
+    
+    subscription: rclpy.subscription = None
+
+    mapData: list[float] = [] # Map data (int)
+    resolution: float = None # Map resolution (meters)
+    dimX: float = None # Map width (units)
+    dimY: float = None # Map height (units)
+
+    minX: float = None # Map lower x bound (meters)
+    minY: float = None # Map lower y bound (meters)
+    maxX: float = None # Map upper x bound (meters)
+    maxY: float = None # Map upper y bound (meters)
 
     def __init__(self, node: Node) -> None:
         """
@@ -239,14 +234,13 @@ class OccupancyGrid_Reader(object):
             params:
                 node -> Node that is subscribing to the topic
         """
+
         self.subscription = node.create_subscription(
             OccupancyGrid, 
             "map",
             self.callback,
             10
         )
-
-        self.subscription
 
     def callback(self, msg: OccupancyGrid) -> None:
         """
@@ -256,16 +250,18 @@ class OccupancyGrid_Reader(object):
                 msg -> conatins data of the laser scan
         """
 
+        # Extract data from message
         self.dimX = msg.info.width
         self.dimY = msg.info.height
         self.mapData = msg.data
         self.resolution = msg.info.resolution
 
-        self.startX = msg.info.origin.position.x
-        self.startY = msg.info.origin.position.y
+        # Calculate Map upper and lower x and y bounds
+        self.minX = msg.info.origin.position.x
+        self.maxX = self.minX + (self.dimX*self.resolution)
 
-        self.endX = self.startX + (self.dimX*self.resolution)
-        self.endY = self.startY + (self.dimY*self.resolution)
+        self.minY = msg.info.origin.position.y
+        self.maxY = self.minY + (self.dimY*self.resolution)
 
     def array_index_to_cartesian(self, index: int) -> tuple[int, int]:
         """
@@ -277,8 +273,8 @@ class OccupancyGrid_Reader(object):
             Returns:
                 x and y value of cvartesian coordinate
         """
-        cartesianX = self.startX + (index % self.dimX)*self.resolution
-        cartesianY = self.startY + (index // self.dimX)*self.resolution
+        cartesianX = self.minX + (index % self.dimX)*self.resolution # y coordinate from index
+        cartesianY = self.minY + (index // self.dimX)*self.resolution # y coordinate from index
 
         return cartesianX, cartesianY
     
@@ -302,8 +298,8 @@ class OccupancyGrid_Reader(object):
             index = None
         else:
             # If so, return the corresponding index
-            index += abs(((x - self.startX)//self.resolution))
-            index += abs(((y - self.startY)//self.resolution)*self.dimX)
+            index += abs(((x - self.minX)//self.resolution))
+            index += abs(((y - self.minY)//self.resolution)*self.dimX)
             index = int(index)
 
         return index
@@ -311,8 +307,18 @@ class OccupancyGrid_Reader(object):
     def get_Data(self) -> list[float]:
         return self.mapData
     
-    def cartesian_coordinate_in_occupancy_grid(self, x, y):
-        return (x > self.startX and x < self.endX and y > self.startY and y < self.endY)
+    def cartesian_coordinate_in_occupancy_grid(self, x: float, y: float) -> bool:
+        """
+            Checks to see whether a point is contained within the occupancy grid
+
+            Params:
+                x -> x value
+                y -> y value
+
+            Returns:
+                True if point is contained otherwise false
+        """
+        return ((x > self.minX) and (x < self.maxX) and (y > self.minY) and (y < self.maxY))
 
     
     def average(self, x: float, y: float) -> float:
@@ -352,16 +358,63 @@ class OccupancyGrid_Reader(object):
                     average += self.mapData[index]
                     count += 1
 
-        return average/count
+        if (count != 0):
+            return average/count
+        else:
+            return None
 
-class ArucoMarker_Reader(object):
+    def get_surrounding_percentages(self, x: float, y: float) -> tuple[float, float]:
+        """
+            Used to search for frontiers: will search grid cells surrounding the given grid cell. If a frontier is present,
+            50% of the grid cells will be unoccupied (-1) and the other 50% will be empty (0)
+            
+                Params:
+                    x -> x value of grid cell
+                    y -> y value of grid cell
+
+                Returns:
+                    Average value of grid cell (x, y)
+        """
+
+        countUnExplored = 0
+        countFree = 0
+        countTotal = 0
+
+        # Loop through surrounding grid cells
+        for xSearch in range(-self.averageSquareSize, self.averageSquareSize):
+            for ySearch in range(-self.averageSquareSize, self.averageSquareSize):
+                # Calculate surrounding grid cell (x, y)
+                newX = xSearch*self.resolution + x
+                newY = ySearch*self.resolution + y
+
+                index = self.cartesian_to_array_index(newX, newY)
+
+                if index != None:
+                    if self.mapData[index] == -1:
+                        countUnExplored += 1
+                    elif self.mapData[index] == 0:
+                        countFree += 1
+
+                    countTotal += 1
+
+        return countFree/countTotal, countUnExplored/countTotal
+        
+
+class ArucoMarker_Subscriber(object):
     """
-    Subscription to the LaserScan topic
+    Subscription to /aruco_markers
     """
     
-    subscription = None
+    subscription: rclpy.subscription = None
 
     def __init__(self, node: Node) -> None:
+        """
+            Sets up a subscription to the /aruco_markers topic
+
+            params:
+                node -> Node that is subscribing to the topic
+        """
+        # Wait until there is a publisher to /aruco_markers
         self.wait_aruco_node_running(node)
     
         self.subscription = node.create_subscription(
@@ -371,25 +424,42 @@ class ArucoMarker_Reader(object):
             10
         )
 
-        self.subscription
-
     def wait_aruco_node_running(self, node: Node):
+        """
+            Blocks until a aruco_node is publishing to /aruco_markers
+
+            params:
+                node -> Node that is subscribing to the topic
+        """
+
         while True:
+            # Get publishers of the /aruco_markers topic
             aruco_marker_publishers = node.get_publishers_info_by_topic("/aruco_markers")
+
+            # Check who is currently publishing to this topic
             if not aruco_marker_publishers:
+                # If no publishers exist, block for another 5 seconds and try again
                 log("INFO", node, "Aruco Node not running - Trying again in 5 seconds")
                 time.sleep(5)
 
             else:
+                # A publisher exists
                 publisher = aruco_marker_publishers[0]._node_name
 
                 if publisher == "aruco_node":
+                    # If publish is aruco_node, then stop blocking and continue the program
                     log("INFO", node, "Aruco Detection is Running, starting map_exporler node")
                     break
 
     def callback(self, msg: ArucoMarkers) -> None:
+        """
+            Call back for aruco_markers Subscription
+
+            Params:
+                msg -> conatins data of the current poses and IDs of the detected aruco_marketrs
+        """
+        
         print(msg)
-    
 
 class Explorer(Node):
     """
@@ -399,24 +469,26 @@ class Explorer(Node):
         /odom
         /scan
         /behaviour_tree_log
+        /map
+        /aruco_markers
     
     and to publish to the follwoing topics:
         /goal_pose
 
     """
 
-    S_Odom = None
-    S_Scan = None
-    S_BehaviourTree = None
-    S_Map = None
-    S_Aruco = None
+    S_Odom: Odom_Subscriber = None # Subscription to /odom
+    S_Scan: LaserScan_Subscriber = None # Subscription to /scan
+    S_BehaviourTree: BehaviourTreeLog_Handler = None # Subscription to /behaviour_tree_log
+    S_Map: OccupancyGrid_Subscriber = None # Subscription to /map
+    S_Aruco: ArucoMarker_Subscriber = None # Subscription to /aruco_marker
 
-    waypointCounter = 0
+    waypointCounter: int = 0 # Total waypoints published
 
-    completedWaypointVectors = []
-    failedWaypoints = []
+    completedWaypointVectors: list[np.ndarray] = [] # Position vectors of the completed waypoints
+    failedWaypointsVectors: list[np.ndarray] = [] # Position vectors of the failed waypoints
 
-    currentWaypoint = None
+    currentWaypoint: PoseStamped = None
 
     def __init__(self):
         """
@@ -424,32 +496,42 @@ class Explorer(Node):
         """
 
         super().__init__("map_explorer")
-        self.declare_parameter('aruco_detect', False)
-        
+
+        # Declaring parameters loaded from params.yaml
+        self.declare_parameters(
+            namespace="",
+            parameters=[
+                ("aruco_detect", rclpy.Parameter.Type.BOOL),
+                ("num_aruco_markers", rclpy.Parameter.Type.INTEGER)
+            ]
+        )
+
+
+        rosParam_aruco_detect = self.get_parameter('aruco_detect').get_parameter_value().bool_value
+        rosParam_num_aruco_markers = self.get_parameter('num_aruco_markers').get_parameter_value().integer_value
+
 
         # Function handlers
         FUNCTION_HANDLERS = [
-            ("NavigateRecovery", "SUCCESS", self.chooseWaypoint, False), 
-            ("NavigateRecovery", "FAILURE", self.chooseWaypoint, True) 
+            ("NavigateRecovery", "SUCCESS", self.chooseWaypoint, False), # Call self.chooseWaypoint(False) if waypoint was reached
+            ("NavigateRecovery", "FAILURE", self.chooseWaypoint, True) # Call self.chooseWaypoint(True) if waypoint wasn't reached
         ]   
         # Setup subscription
 
-        self.S_Odom = Odom_Reader(self) # Setup /odom subscription
-        self.S_Scan = LaserScan_Reader(self) # Setup /scan subscription
-        self.S_Map = OccupancyGrid_Reader(self)
+        self.S_Odom = Odom_Subscriber(self) # Setup /odom subscription
+        self.S_Scan = LaserScan_Subscriber(self) # Setup /scan subscription
+        self.S_Map = OccupancyGrid_Subscriber(self) # Subscription to /map
         self.S_BehaviourTree = BehaviourTreeLog_Handler(self, FUNCTION_HANDLERS) # Setup /behaviour_tree_log subscription
-        
-        aruco_detect_value = self.get_parameter('aruco_detect').get_parameter_value().bool_value
 
-        if aruco_detect_value == True:
+        # Check if aruco_detect is True
+        if rosParam_aruco_detect == True:
             log("WARN", self, "Running map_explorer with Aruco decetion")
-            self.S_Aruco = ArucoMarker_Reader(self)
+            self.S_Aruco = ArucoMarker_Subscriber(self) # Subscription to /aruco_marker 
         else:
             log("WARN", self, "Running map_explorer without Aruco decetion")
-        
-
-        # Setup publishers
-        self.publisher = self.create_publisher(
+    
+        # Create publisher to /goal_pose
+        self.GoalPose_Publisher = self.create_publisher(
             PoseStamped,
             "goal_pose",
             10
@@ -458,7 +540,7 @@ class Explorer(Node):
         self.completedWaypointVectors.append(np.array([0, 0]))
         log("INFO", self, "READY")
 
-    def get_scan_average(self, startIndex: int, endIndex: int) -> float:
+    def get_scan_average(self, startIndex: float, endIndex: float) -> float:
         """
             Gets the average value of the laserScan data between two indexes
 
@@ -499,7 +581,7 @@ class Explorer(Node):
 
             # Convert angle to be within range (-180 <= arg <= 180)
             if i*ANGLE_WIDTH_DEG > 180:
-                freeAngle = (-1.)*(deg_to_rad(360.) - ANGLE_WIDTH_RAD*(i-0.5))
+                freeAngle = (-1.)*(LAMBDA_deg_to_rad(360.) - ANGLE_WIDTH_RAD*(i-0.5))
             else:
                 freeAngle = ANGLE_WIDTH_RAD*(i-0.5)
             
@@ -525,12 +607,12 @@ class Explorer(Node):
         
         unoccupiedDistanceVectors = []
 
+        x = self.S_Odom.get_X()
+        y = self.S_Odom.get_Y()
+
         # Go through each angle and calculate where the robot's new X and Y will be
-        for angle in unoccupiedDirections:
-            x = self.S_Odom.get_X()
-            y = self.S_Odom.get_Y()
-            
-            newX = x + math.sin(angle+(CONSTANT_PI/2.))*DISTANCE_STEP
+        for angle in unoccupiedDirections:            
+            newX = x + math.cos(angle)*DISTANCE_STEP
             newY = y + math.sin(angle)*DISTANCE_STEP
 
             vector = np.array(([newX, newY]))
@@ -562,11 +644,10 @@ class Explorer(Node):
 
     def chooseWaypoint(self, previousPathFailed: bool) -> None:
         """
-            Chooses the robots next waypoint based on these rules:
+            Description...
 
-            1) If this is the robots first waypoint, chose a random waypoint that is unobstructed
-            2) If this is not the robots first waypoint, the next waypoint must take it further away from the previous 5 waypoints
-            3) If the robot cannot chose a point that satisfys 3, back track to the previous waypoint and continue 3
+            Params:
+                previousPathFailed -> was the previous waypoint not successful
         """
     
         waypoint = None
@@ -576,7 +657,7 @@ class Explorer(Node):
             log("INFO", self, "FAILED")
             currentX = self.currentWaypoint.pose.position.x
             currentY = self.currentWaypoint.pose.position.y
-            self.failedWaypoints.append((currentX, currentY))
+            self.failedWaypointsVectors.append((currentX, currentY))
         else:
             log("INFO", self, "SUCCESS")
 
@@ -616,35 +697,34 @@ class Explorer(Node):
             if (i == len(self.completedWaypointVectors)-1):
                 # If this waypoint takes the robot further away from every previous waypoint, create a waypoint to publish to goal_pose topic
                 waypointX = unoccupiedDirectionVector[0]
-                waypointY = unoccupiedDirections[1]
+                waypointY = unoccupiedDirectionVector[1]
 
-                if (self.S_Map.cartesian_coordinate_in_occupancy_grid(waypointX, waypointY)):
-                    if (self.S_Map.average(waypointX, waypointY) == -1):
-                        waypoint = self.create_waypoint(unoccupiedDirectionVector[0], unoccupiedDirectionVector[1], self.S_Odom.get_W())
-                        self.waypointCounter += 1
-                        break
+                # Check to see if waypoint is in an unexplored area
+                if (self.S_Map.average(waypointX, waypointY) == -1):
+                    waypoint = self.create_waypoint(unoccupiedDirectionVector[0], unoccupiedDirectionVector[1], self.S_Odom.get_W())
+                    self.waypointCounter += 1
+                    break
 
         if (waypoint == None):
             # If the robot could not find any waypoints
-            log("INFO", self, "Stuck, finding unexplored area... ")
+            log("INFO", self, "Stuck, finding unexplored frontier... ")
             stuck = True
 
             for index in range(len(self.S_Map.get_Data())):
                 x, y = self.S_Map.array_index_to_cartesian(index)
-
-                if self.S_Map.average(x, y) == -1 and self.check_waypoint(x, y):
-                    currentW = self.S_Odom.get_W()
-                    waypoint = self.create_waypoint(x, y, currentW)
-
+                perecentFree, percentUnExplored = self.S_Map.get_surrounding_percentages(x, y)
+                
+                # Check to see if point is on a frontier
+                if abs(percentUnExplored - perecentFree) < 0.01 and abs(percentUnExplored - 0.5) < 0.01:
+                    waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
                     log("INFO", self, "Done!")
-                    
                     break
 
         self.send_waypoint(waypoint)
 
     def check_waypoint(self, x, y):
         waypointValid = True
-        for waypoint in self.failedWaypoints:
+        for waypoint in self.failedWaypointsVectors:
             if abs(x - waypoint[0]) < 0.1 and abs(y - waypoint[1]) < 0.1:
                 waypointValid = False
                 break
@@ -664,25 +744,41 @@ class Explorer(Node):
 
         log("INFO", self, f"Sending Waypoint: x -> {waypoint.pose.position.x:.4f}, y -> {waypoint.pose.position.y:.4f} -- Status: ")
         self.currentWaypoint = waypoint
-        self.publisher.publish(waypoint)
+        self.GoalPose_Publisher.publish(waypoint)
 
-def log(level:str, node:Node, message:str):
+
+def log(level:str, node:Node, message:str) -> None:
+    """
+        Logs a message to the corresponding ros2 logger (info or warning logger)
+
+
+        Params:
+            level -> which logger to send message to
+                INFO: get_logger().info(...)
+                WARN: get_logger().warning(...)
+            node -> node that will send the message
+            messgae -> string to be sent to the logger
+
+    """
     if level == "WARN":
         node.get_logger().warning(message)
     elif level == "INFO":
         node.get_logger().info(message)
-        
-
 
 def main(args=None):
     """
         Entry Point
     """
-    os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] [{time}]: {message} "
 
-    rclpy.init(args=args)
-    map_explorer = Explorer()
-    rclpy.spin(map_explorer)
+    os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] [{time}]: {message}"
+    
+    try:
+        rclpy.init(args=args)
+        map_explorer = Explorer()
+        rclpy.spin(map_explorer)
+       
+    except (KeyboardInterrupt):
+        log("WARN", map_explorer, "Exiting")
     
 
 if __name__ == "__main__":
