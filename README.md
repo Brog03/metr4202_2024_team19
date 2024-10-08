@@ -14,7 +14,7 @@
 1) Navigate to your worspace's src folder and clone this repository
 ```
 cd path_to_worspace/src/
-git clone https://github.com/Brog03/metr4202_2024_team09.git
+git clone https://github.com/Brog03/metr4202_2024_team19.git
 git clone https://github.com/JMU-ROBOTICS-VIVA/ros2_aruco.git
 ```
 
