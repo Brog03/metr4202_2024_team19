@@ -1,4 +1,12 @@
-map_explorer_name_space:
-  Explorer:
-    ros__parameters:
-      aruco_detect: False
+Explorer:
+  ros__parameters:
+    aruco_detect: False
+    num_aruco_markers: 10
+
+amcl:
+  ros__parameters:
+    set_initial_pose: true
+    initial_pose: 
+      x: 0.0
+      y: 0.0
+      yaw: 1.0
