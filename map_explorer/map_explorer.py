@@ -503,26 +503,14 @@ class Explorer(Node):
         return point
 
     def chooseWaypoint(self, previousPathFailed: bool) -> None:
-        """
-            Chooses the robots next waypoint based on these rules:
-
-            1) If this is the robots first waypoint, chose a random waypoint that is unobstructed
-            2) If this is not the robots first waypoint, the next waypoint must take it further away from the previous 5 waypoints
-            3) If the robot cannot chose a point that satisfys 3, back track to the previous waypoint and continue 3
-        """
         waypoint = None
         stuck = False
 
-        if previousPathFailed == True:
-            print("FAILED")
+        if previousPathFailed:
             currentX = self.currentWaypoint.pose.position.x
             currentY = self.currentWaypoint.pose.position.y
             self.failedWaypoints.append((currentX, currentY))
         else:
-            print("SUCCESS")
-
-        # Robots first waypoint
-        if (self.waypointCounter != 0):
             robotPoseVector = np.array(([self.S_Odom.get_X(), self.S_Odom.get_Y()]))
             self.completedWaypointVectors.append(robotPoseVector)
         
@@ -533,15 +521,11 @@ class Explorer(Node):
             currentX = self.S_Odom.get_X()
             currentY = self.S_Odom.get_Y()
             self.completedWaypointVectors = [np.array([currentX, currentY])]
-
             stuck = False
 
-        # Calculate free angles
         unoccupiedDirections = self.find_unoccupied_directions()
-        # Calculate position vectors
         unoccupiedDirectionVectors = self.calculate_unoccupied_directions_vectors(unoccupiedDirections)
 
-        # Go thorugh each of these position vectors
         for unoccupiedDirectionVector in unoccupiedDirectionVectors:
             i = 0
             for i, completedWaypointVector in enumerate(self.completedWaypointVectors):
@@ -549,36 +533,24 @@ class Explorer(Node):
                 distanceFromCompletedWaypoint = np.linalg.norm(completedWaypointVector - robotPoseVector)
                 distanceFromNewWaypointVector = np.linalg.norm(completedWaypointVector - unoccupiedDirectionVector)
 
-                # Check to see if the new position vector will take the robot further away from the previous comleted waypoints
                 if (distanceFromCompletedWaypoint - distanceFromNewWaypointVector) > 0:
-                    # If this waypoint brings the robot closer to a previous waypoint, do not use this waypoint
                     break
             
-            if (i == len(self.completedWaypointVectors)-1):
-                # If this waypoint takes the robot further away from every previous waypoint, create a waypoint to publish to goal_pose topic
-                waypointX = unoccupiedDirectionVector[0]
-                waypointY = unoccupiedDirections[1]
+            waypointX, waypointY = unoccupiedDirectionVector
 
-                if (self.S_Map.cartesian_coordinate_in_occupancy_grid(waypointX, waypointY)):
-                    if (self.S_Map.average(waypointX, waypointY) == -1):
-                        waypoint = self.create_waypoint(unoccupiedDirectionVector[0], unoccupiedDirectionVector[1], self.S_Odom.get_W())
-                        self.waypointCounter += 1
-                        break
+            if (i == len(self.completedWaypointVectors)-1 and
+                    self.S_Map.cartesian_coordinate_in_occupancy_grid(waypointX, waypointY) and
+                    self.S_Map.average(waypointX, waypointY) < COST_THRESHOLD):  # Avoid high-cost areas
+                waypoint = self.create_waypoint(waypointX, waypointY, self.S_Odom.get_W())
+                self.waypointCounter += 1
+                break
 
-        if (waypoint == None):
-            # If the robot could not find any waypoints
-            print("Stuck, finding unexplored area... ", end="")
+        if waypoint is None:
             stuck = True
-
             for index in range(len(self.S_Map.get_Data())):
                 x, y = self.S_Map.array_index_to_cartesian(index)
-
                 if self.S_Map.average(x, y) == -1 and self.check_waypoint(x, y):
-                    currentW = self.S_Odom.get_W()
-                    waypoint = self.create_waypoint(x, y, currentW)
-
-                    print("Done!\n")
-                    
+                    waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
                     break
 
         self.send_waypoint(waypoint)
