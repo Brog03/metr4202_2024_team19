@@ -48,20 +48,16 @@ source ~/.bashrc
 ros2 launch turtlebot3_gazebo world_name.launch.py
 ```
 
-Terminal 2 - launch the nav2 package
+Terminal 2 - launch the nav2 package with SLAM 
 ```
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True
-```
-
-Terminal 3 - luanch slam
-```
-ros2 launch slam_toolbox online_async_launch.py
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 ```
 
-2) Finally launch the package by creating a new termianl and running
+Terminal 3 - Finally launch the package by creating a new termianl and running
 ```
 ros2 launch map_explorer_bringup map_explorer_bringup.launch.py
 ```
+
 ## Map_explorer options
 The map_explorer node is loaded with parameters located in params.yaml in map_explorer_bringup
 aruco_detect -> Whether to enable aruco detection
