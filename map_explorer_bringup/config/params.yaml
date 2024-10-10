@@ -2,6 +2,7 @@ Explorer:
   ros__parameters:
     aruco_detect: False
     num_aruco_markers: 10
+    debug: True
 
 amcl:
   ros__parameters:
