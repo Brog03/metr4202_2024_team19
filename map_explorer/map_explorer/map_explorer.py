@@ -787,7 +787,10 @@ class Explorer(Node):
             if abs(x - waypoint[0]) < 0.1 and abs(y - waypoint[1]) < 0.1:
                 closeToCompleted = True
                 break
-        lowCost = (self.S_Map_Global_Cost.average(x, y, 2) <= 1)
+        #lowCost = (self.S_Map_Global_Cost.average(x, y, 2) <= 1)
+        
+        if self.S_Map_Global_Cost is not None: 
+           lowCost =(self.S_Map_Global_Cost.average(x, y, 2) <= 1)
         
         if not stuck:
             notExplored = (self.S_Map_Occupancy.average(x, y, self.SEARCH_RADIUS) == -1)
