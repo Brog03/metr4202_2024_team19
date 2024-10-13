@@ -14,27 +14,10 @@
 1) Navigate to your worspace's src folder and clone this repository
 ```
 cd path_to_worspace/src/
-git clone https://github.com/Brog03/metr4202_2024_team19.git
-git clone https://github.com/JMU-ROBOTICS-VIVA/ros2_aruco.git
+git clone git@github.com:Brog03/metr4202_2024_team19.git
 ```
 
-3) Once both repos have been cloned, navigate to the following folder and open up the following file:
-```
-cd path_to_ws/src/ros2_aruco/ros2_aruco/ros2_aruco
-```
-You will need to change lines 148 and 149 to the following in aruco_node.py
-
-```
-line 148 -> cv2.aruco.getPredefinedDictionary(dictionary_id)
-line 149 -> self.aruco_parameters = cv2.aruco.DetectorParameters()  
-```
-
-4) In order to use Aruco detection, you must install the necessary python package by running
-```
-pip3 install opencv-contrib-python transforms3d
-```
-
-5) Naviagte back to the worspace and build all packages
+2) Naviagte back to the worspace and build all packages
 ```
 cd ../
 colcon build --symlink-install
@@ -45,31 +28,36 @@ source ~/.bashrc
 ## map_explorer
 1) Open three new terminals, in Terminal 1, launch your gazebo world
 ```
-ros2 launch turtlebot3_gazebo world_name.launch.py
+ros2 launch turtlebot3_gazebo <world_name>.launch.py
 ```
 
-Terminal 2 - launch the nav2 package with SLAM 
+Terminal 2 - launch the nav2 package
 ```
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True
 ```
 
-Terminal 3 - Finally launch the package by creating a new termianl and running
+Terminal 3 - launch the SLAM package 
+```
+ros2 launch slam_toolbox online_async_launch.py
+```
+
+Terminal 4 - Finally launch the package by creating a new termianl and run
 ```
 ros2 launch map_explorer_bringup map_explorer_bringup.launch.py
 ```
 
+When map_explorer node is running and has outputted READY, open the rviz window, and give an initial waypoint that is close to the turtlebot (Testing)
+
 ## Map_explorer options
 The map_explorer node is loaded with parameters located in params.yaml in map_explorer_bringup
+
 aruco_detect -> Whether to enable aruco detection
 num_aruco_markers -> Total number of markers the node will look for
+debug -> Whether to enable output from the map_explorer node
 
 Initial pose is automatically set through loading the varibles from params.yaml
 
-## aruco_detection
-To run Aruco Detection, open the params.yaml file and change aruco_detect to True, and run the following in a new terminal
-```
-ros2 run ros2_aruco aruco_node
-```
+
 
 
 

@@ -88,7 +88,7 @@ class LaserScan_Subscriber(object):
     Subscription to the LaserScan topic
     """
     
-    subscription = None
+    subscription = None ##
 
     data: list[float] = None # Scan data (meters)
     minAngle: float = None # Scan angle lower bound (rads)
@@ -103,10 +103,10 @@ class LaserScan_Subscriber(object):
                 node -> Node that is subscribing to the topic
         """
         self.subscription = node.create_subscription(
-            LaserScan, 
-            "scan",
-            self.callback,
-            10
+            LaserScan, # Message Type
+            "scan", # Topic name
+            self.callback, # Callback function
+            10 # QoSProfile
         )
 
     def callback(self, msg: LaserScan) -> None:
@@ -122,7 +122,28 @@ class LaserScan_Subscriber(object):
         self.angleIncrement = msg.angle_increment
 
     def get_Data(self) -> list[float]:
+        """
+        """
         return self.data
+    
+    def get_scan_average(self, startIndex: float, endIndex: float) -> float:
+        """
+            Gets the average value of the laserScan data between two indexes
+
+            Params:
+                startIndex -> first index in the laser_scan_data array
+                endIndex -> last index in the laser_scan_data array
+
+            Returns:
+                Average value bewteen these two indexes
+        """
+
+        dataSum = 0
+        ##
+        for i in range(startIndex, endIndex):
+            dataSum += self.data[i]
+
+        return dataSum/(endIndex-startIndex)
         
     
 
@@ -145,14 +166,11 @@ class Odom_Subscriber(object):
             node -> Node that is subscribing to the topic
         """
         self.subscription = node.create_subscription(
-            Odometry,
-            "odom",
-            self.callback, 
-            10
+            Odometry, ##
+            "odom", ##
+            self.callback, ##
+            10 ##
         )
-    
-    def __repr__(self) -> str:
-        return f"x: {self.x} y: {self.y} w: {self.w}"
 
     def callback(self, msg: Odometry) -> None:
         """
@@ -164,7 +182,6 @@ class Odom_Subscriber(object):
         """
         self.x = msg.pose.pose.position.x
         self.y = msg.pose.pose.position.y
-
         self.w = self.euler_from_quaternion(msg.pose.pose.orientation)[2]
     
     def euler_from_quaternion(self, quaterion: list[float, float, float, float]) -> tuple[float, float, float]:
@@ -178,36 +195,38 @@ class Odom_Subscriber(object):
                 roll, pitch and yaw (rads)
         
         """
-        x = quaterion.x
-        y = quaterion.y
-        z = quaterion.z
-        w = quaterion.w
-        t0 = +2.0 * (w * x + y * z)
-        t1 = +1.0 - 2.0 * (x * x + y * y)
-        roll_x = math.atan2(t0, t1)
-     
-        t2 = +2.0 * (w * y - z * x)
-        t2 = +1.0 if t2 > +1.0 else t2
-        t2 = -1.0 if t2 < -1.0 else t2
-        pitch_y = math.asin(t2)
-     
+        x = quaterion.x ##
+        y = quaterion.y ##
+        z = quaterion.z ##
+        w = quaterion.w ##
+
+        ## 
         t3 = +2.0 * (w * z + x * y)
         t4 = +1.0 - 2.0 * (y * y + z * z)
         yaw_z = math.atan2(t3, t4)
      
-        return roll_x, pitch_y, yaw_z # in radians
+        return yaw_z # in radians
 
     def get_X(self) -> float:
+        """
+        """
         return self.x
     
     def get_Y(self) -> float:
+        """
+        """
         return self.y
     
     def get_W(self) -> float:
+        """
+        """
         return self.w
     
 class Subscriber_Map(object):
-    subscription: rclpy.subscription = None
+    """
+    
+    """
+    subscription: rclpy.subscription = None ##
 
     mapData: list[float] = [] # Map data (int)
     resolution: float = None # Map resolution (meters)
@@ -228,9 +247,9 @@ class Subscriber_Map(object):
         """
 
         self.subscription = node.create_subscription(
-            OccupancyGrid, 
-            subsctription_,
-            self.callback,
+            OccupancyGrid, ##
+            subsctription_, ##
+            self.callback, ##
             10
         )
 
@@ -310,16 +329,25 @@ class Subscriber_Map(object):
         return ((x > self.minX) and (x < self.maxX) and (y > self.minY) and (y < self.maxY))
     
     def get_data_array(self) -> list[float]:
+        """
+        """
         return self.mapData
     
     def get_data_with_cartesian(self, x: float, y: float) -> float:
-        index = self.cartesian_to_array_index(x, y)
+        """
+        """
+        index = self.cartesian_to_array_index(x, y) ##
+
         if (index != None):
+            ##
             return self.mapData[index]
         else:
+            ##
             return 100
 
     def get_data_with_index(self, index: int) -> float:
+        """
+        """
         return self.mapData[index]
     
     def average(self, x: float, y: float, radius: int) -> float:
@@ -378,7 +406,7 @@ class OccupancyGrid_Subscriber(Subscriber_Map):
                 node -> Node that is subscribing to the topic
         """
 
-        super().__init__(node, "map")
+        super().__init__(node, "map") ##
 
 
     def get_surrounding_percentages(self, x: float, y: float, radius) -> tuple[float, float]:
@@ -405,12 +433,16 @@ class OccupancyGrid_Subscriber(Subscriber_Map):
                 newX = xSearch*self.resolution + x
                 newY = ySearch*self.resolution + y
 
+                ##
                 index = self.cartesian_to_array_index(newX, newY)
 
                 if index != None:
+                    ##
                     if self.mapData[index] == -1:
+                        ##
                         countUnExplored += 1
                     elif self.mapData[index] == 0:
+                        ##
                         countFree += 1
 
                     countTotal += 1
@@ -430,7 +462,7 @@ class CostMap_Subscriber(Subscriber_Map):
                 node -> Node that is subscribing to the topic
         """
 
-        super().__init__(node, "/global_costmap/costmap")
+        super().__init__(node, "/global_costmap/costmap") ##
         
 
 # class ArucoMarker_Subscriber(object):
@@ -505,14 +537,14 @@ class Explorer(Node):
         /scan
         /behaviour_tree_log
         /map
-        /aruco_markers
+        /global_costmap/costmap
     
     and to publish to the follwoing topics:
         /goal_pose
 
     """
 
-    SEARCH_RADIUS = 5
+    SEARCH_RADIUS: int = 5 ##
 
     S_Odom: Odom_Subscriber = None # Subscription to /odom
     S_Scan: LaserScan_Subscriber = None # Subscription to /scan
@@ -527,9 +559,9 @@ class Explorer(Node):
     LOCAL_completedWaypointVectors: list[np.ndarray] = [] # Position vectors of the completed waypoints
     failedWaypointsVectors: list[np.ndarray] = [] # Position vectors of the failed waypoints
 
-    currentWaypoint: PoseStamped = None
+    currentWaypoint: PoseStamped = None ##
 
-    debug: bool = None
+    debug: bool = None  ##
 
     def __init__(self):
         """
@@ -542,15 +574,17 @@ class Explorer(Node):
         self.declare_parameters(
             namespace="",
             parameters=[
-                ("aruco_detect", rclpy.Parameter.Type.BOOL),
-                ("num_aruco_markers", rclpy.Parameter.Type.INTEGER), 
-                ("debug", rclpy.Parameter.Type.BOOL)
+                ("aruco_detect", rclpy.Parameter.Type.BOOL), ##
+                ("num_aruco_markers", rclpy.Parameter.Type.INTEGER), ##
+                ("debug", rclpy.Parameter.Type.BOOL) ##
             ]
         )
 
-
+        ##
         rosParam_aruco_detect = self.get_parameter('aruco_detect').get_parameter_value().bool_value
+        ##
         rosParam_num_aruco_markers = self.get_parameter('num_aruco_markers').get_parameter_value().integer_value
+        ##
         rosParam_debug = self.get_parameter('debug').get_parameter_value().bool_value
 
 
@@ -565,7 +599,7 @@ class Explorer(Node):
         self.S_Scan = LaserScan_Subscriber(self) # Setup /scan subscription
         self.S_Map_Occupancy = OccupancyGrid_Subscriber(self) # Subscription to /map
         self.S_BehaviourTree = BehaviourTreeLog_Handler(self, FUNCTION_HANDLERS) # Setup /behaviour_tree_log subscription
-        self.S_Map_Global_Cost = CostMap_Subscriber(self)
+        self.S_Map_Global_Cost = CostMap_Subscriber(self) ##
 
         # Check if aruco_detect is True
         if rosParam_aruco_detect == True:
@@ -581,32 +615,16 @@ class Explorer(Node):
             10
         )
 
-        self.LOCAL_completedWaypointVectors.append(np.array([0, 0]))
+        self.LOCAL_completedWaypointVectors.append(np.array([0, 0])) ##
 
         if not rosParam_debug:
+            ##
             log("INFO", self, "READY (Debug disabled)", True)
             self.debug = False
         else:
+            ##
             log("INFO", self, "READY", True)
             self.debug = True
-
-    def get_scan_average(self, startIndex: float, endIndex: float) -> float:
-        """
-            Gets the average value of the laserScan data between two indexes
-
-            Params:
-                startIndex -> first index in the laser_scan_data array
-                endIndex -> last index in the laser_scan_data array
-
-            Returns:
-                Average value bewteen these two indexes
-        """
-
-        dataSum = 0
-        for i in range(startIndex, endIndex):
-            dataSum += self.S_Scan.data[i]
-
-        return dataSum/(endIndex-startIndex)
 
     def find_unoccupied_directions(self) -> list:
         """
@@ -617,17 +635,17 @@ class Explorer(Node):
                 A list of angles (In reference to the point (0, 0, 0)) in which the robot can travel in
         """
 
-        unoccupiedDirections = []
-        subScanSize = int(len(self.S_Scan.get_Data())/NUM_DIRECTIONS)
+        unoccupiedDirections = [] ##
+        subScanSize = int(len(self.S_Scan.get_Data())/NUM_DIRECTIONS) ##
 
         for i in range(NUM_DIRECTIONS):
-            freeAngle = 0
-            bot_angle = 0
+            freeAngle = 0 ##
+            bot_angle = 0 ##
 
-            startIndex = i*subScanSize 
-            endIndex = startIndex + subScanSize - 1
+            startIndex = i*subScanSize ##
+            endIndex = startIndex + subScanSize - 1 ##
 
-            avg_range = self.get_scan_average(startIndex, endIndex) # Get average distance
+            avg_range = self.S_Scan.get_scan_average(startIndex, endIndex) # Get average distance
 
             # Convert angle to be within range (-180 <= arg <= 180)
             if i*ANGLE_WIDTH_DEG > 180:
@@ -679,7 +697,9 @@ class Explorer(Node):
             i = 0
             for i, completedWaypointVector in enumerate(self.LOCAL_completedWaypointVectors):
                 robotPoseVector = np.array(([self.S_Odom.get_X(), self.S_Odom.get_Y()]))
+                ##
                 distanceFromCompletedWaypoint = np.linalg.norm(completedWaypointVector - robotPoseVector)
+                ##
                 distanceFromNewWaypointVector = np.linalg.norm(completedWaypointVector - unoccupiedDirectionVector)
 
                 # Check to see if the new position vector will take the robot further away from the previous comleted waypoints
@@ -695,11 +715,14 @@ class Explorer(Node):
                 # Check to see if waypoint is in an unexplored area
                 waypointValid, cost = self.check_waypoint(waypointX, waypointY, False)
 
+                ##
                 if (waypointValid):
+                    ##
                     if lowestCost == None:
                         lowestCost = cost
                         waypoint = self.create_waypoint(waypointX, waypointY, self.S_Odom.get_W())
                     else:
+                        ##
                         if cost < lowestCost:
                             lowestCost = cost
                             waypoint = self.create_waypoint(waypointX, waypointY, self.S_Odom.get_W())
@@ -719,13 +742,41 @@ class Explorer(Node):
                 PoseStamp object waypoint that can be published to goal_pose
         """
 
-        point = PoseStamped()
-        point.header.frame_id = "map"
-        point.pose.position.x = x
-        point.pose.position.y = y
-        point.pose.orientation.w = w
+        point = PoseStamped() ##
+        point.header.frame_id = "map" ##
+        point.pose.position.x = x ##
+        point.pose.position.y = y ##
+        point.pose.orientation.w = w ##
 
         return point
+    
+    def find_frontier(self) -> PoseStamped:
+        """
+        """
+        lowestCost = None ##
+        waypoint = None ##
+
+        ##
+        for index in range(len(self.S_Map_Occupancy.get_data_array())):
+            x, y = self.S_Map_Occupancy.array_index_to_cartesian(index) ##
+                
+            waypointValid, cost = self.check_waypoint(x, y, True) ##
+            if waypointValid:
+                ##
+                if abs(cost + 1) < 0.01:
+                    ##
+                    waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
+                    break
+                elif lowestCost == None:
+                    ##
+                    lowestCost = cost
+                    waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
+                elif (cost < lowestCost):
+                    ##
+                    lowestCost = cost
+                    waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
+
+        return waypoint
 
     def chooseWaypoint(self, previousPathFailed: bool) -> None:
         """
@@ -735,33 +786,42 @@ class Explorer(Node):
                 previousPathFailed -> was the previous waypoint not successful
         """
     
-        waypoint = None
-        stuck = False
+        waypoint = None # Chosen Waypoint
+        frontierSearch = False # Whether to serach for frontier or angle
 
         if (self.waypointCounter != 0):
+            # Add robots current position to the loacl completed waypoints
             robotPoseVector = np.array(([self.S_Odom.get_X(), self.S_Odom.get_Y()]))
             self.LOCAL_completedWaypointVectors.append(robotPoseVector)
 
             if previousPathFailed == True:
+                # If waypoint failed, add waypoint to failedWaypointsVectors array
                 log("INFO", self, "FAILED", self.debug)
                 currentX = self.currentWaypoint.pose.position.x
                 currentY = self.currentWaypoint.pose.position.y
                 self.failedWaypointsVectors.append(np.array([currentX, currentY]))
             else:
+                # If waypoint was a success, add waypoint to global completed waypoints
                 log("INFO", self, "SUCCESS", self.debug)
                 currentX = self.currentWaypoint.pose.position.x
                 currentY = self.currentWaypoint.pose.position.y
                 self.GLOBAL_completedWaypointVectors.append(np.array([currentX, currentY]))
         
+        ##
         if len(self.LOCAL_completedWaypointVectors) > 5:
+            ##
             self.LOCAL_completedWaypointVectors = self.LOCAL_completedWaypointVectors[1:]
 
-        if stuck:
-            currentX = self.S_Odom.get_X()
+        if frontierSearch:
+            currentX = self.S_Odom.get_X() 
             currentY = self.S_Odom.get_Y()
+            ##
             self.LOCAL_completedWaypointVectors = [np.array([currentX, currentY])]
 
-            stuck = False
+            frontierSearch = False ##
+
+        ### SECTION 1)
+            ##
 
         # Calculate free angles
         unoccupiedDirections = self.find_unoccupied_directions()
@@ -770,69 +830,68 @@ class Explorer(Node):
 
         waypoint = self.check_unoccupied_directions_vectors(unoccupiedDirectionsVectors)
 
+        ### SECTION 2)
+            ##
         if (waypoint == None):
             # If the robot could not find any waypoints
             log("INFO", self, "Stuck, finding unexplored frontier... ", self.debug)
 
-            stuck = True
-            lowestCost = None
+            frontierSearch = True
+            waypoint = self.find_frontier() ##        
 
-            for index in range(len(self.S_Map_Occupancy.get_data_array())):
-                x, y = self.S_Map_Occupancy.array_index_to_cartesian(index)
-                    
-                waypointValid, cost = self.check_waypoint(x, y, True)
-
-                # Check to see if point is on a frontier
-
-                if waypointValid:
-                    if abs(cost + 1) < 0.01:
-                        waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
-                        break
-                    elif lowestCost == None:
-                        lowestCost = cost
-                        waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
-                    elif (cost < lowestCost):
-                        lowestCost = cost
-                        waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
-
-        
         if waypoint != None:
-            self.currentWaypoint = waypoint
+            ##
+            self.currentWaypoint = waypoint 
             self.send_waypoint(waypoint)
             self.waypointCounter += 1
         else:
+            ##
             log("INFO", self, "Map fully explored ", self.debug)
             waypoint = self.create_waypoint(0., 0., 0.)
             self.send_waypoint(waypoint)
 
-    def check_waypoint(self, x: float, y: float, stuck):
-        waypointValid = False
+    def check_waypoint(self, x: float, y: float, frontier: bool) -> bool:
+        """
+        
+        """
+        waypointValid = False ##
 
-        closeToFailed = False
 
+        closeToFailed = False ##
         for waypoint in self.failedWaypointsVectors:
+            ##
             if abs(x - waypoint[0]) < 0.1 and abs(y - waypoint[1]) < 0.1:
                 closeToFailed = True
                 break
             
-        closeToCompleted = False
+        closeToCompleted = False ##
         for waypoint in self.GLOBAL_completedWaypointVectors:
+            ##
             if abs(x - waypoint[0]) < 0.1 and abs(y - waypoint[1]) < 0.1:
                 closeToCompleted = True
                 break
 
-        cost = self.S_Map_Global_Cost.average(x, y, 3)
+        cost = self.S_Map_Global_Cost.average(x, y, 3) ##
         
-        if not stuck:
+        if not frontier:
+            ##
+
+            ##
             notExplored = (self.S_Map_Occupancy.average(x, y, self.SEARCH_RADIUS) == -1)
 
+            ##
             waypointValid = (notExplored == True) and (closeToFailed != True) and (closeToCompleted != True)
         
         else:
+            ##
+
+            ##
             perecentFree, percentUnExplored = self.S_Map_Occupancy.get_surrounding_percentages(x, y, self.SEARCH_RADIUS)
 
+            ##
             onFrontier = (abs(percentUnExplored - perecentFree) < 0.02) and (abs(percentUnExplored - 0.5) < 0.02)
 
+            ##
             waypointValid = (closeToFailed != True) and (closeToCompleted != True) and (onFrontier == True)
 
         return waypointValid, cost
@@ -847,10 +906,10 @@ class Explorer(Node):
                 waypoint: The waypoint in which the robot will travel to
         """
 
-
+        ##
         log("INFO", self, f"Sending Waypoint: x -> {waypoint.pose.position.x:.4f}, y -> {waypoint.pose.position.y:.4f} -- Status: ", self.debug)
-        self.currentWaypoint = waypoint
-        self.GoalPose_Publisher.publish(waypoint)
+        self.currentWaypoint = waypoint ##
+        self.GoalPose_Publisher.publish(waypoint) ##
 
 
 def log(level:str, node:Node, message:str, debug: bool) -> None:
@@ -864,28 +923,31 @@ def log(level:str, node:Node, message:str, debug: bool) -> None:
                 WARN: get_logger().warning(...)
             node -> node that will send the message
             messgae -> string to be sent to the logger
+            debug -> True if messages should be printed
 
     """
     if debug:
         if level == "WARN":
-            node.get_logger().warning(message)
+            node.get_logger().warning(message) ##
         elif level == "INFO":
-            node.get_logger().info(message)
+            node.get_logger().info(message) ##
 
 def main(args=None):
     """
         Entry Point
     """
 
+    ##
     os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] [{time}]: {message}"
     
+    ##
     try:
-        rclpy.init(args=args)
-        map_explorer = Explorer()
-        rclpy.spin(map_explorer)
+        rclpy.init(args=args) ##
+        map_explorer = Explorer() ##
+        rclpy.spin(map_explorer) ##
        
     except (KeyboardInterrupt):
-        log("WARN", map_explorer, "Exiting", True)
+        log("WARN", map_explorer, "Exiting", True) ##
     
 
 if __name__ == "__main__":
