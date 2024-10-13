@@ -182,7 +182,7 @@ class Odom_Subscriber(object):
         """
         self.x = msg.pose.pose.position.x
         self.y = msg.pose.pose.position.y
-        self.w = self.euler_from_quaternion(msg.pose.pose.orientation)[2]
+        self.w = self.euler_from_quaternion(msg.pose.pose.orientation)
     
     def euler_from_quaternion(self, quaterion: list[float, float, float, float]) -> tuple[float, float, float]:
         """
