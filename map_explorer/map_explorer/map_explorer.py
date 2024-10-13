@@ -103,9 +103,9 @@ class LaserScan_Subscriber(object):
                 node -> Node that is subscribing to the topic
         """
         self.subscription = node.create_subscription(
-            LaserScan, 
-            "scan",
-            self.callback,
+            LaserScan, #Message Type 
+            "scan", #topic name 
+            self.callback, #callback function 
             10
         )
 
@@ -805,7 +805,19 @@ class Explorer(Node):
             waypoint = self.create_waypoint(0., 0., 0.)
             self.send_waypoint(waypoint)
 
-    def check_waypoint(self, x: float, y: float, stuck):
+    def check_waypoint(self, x: float, y: float, frontier: bool):
+        """
+        Checks if waypoint chosen is valid and if it is a frontier 
+
+        params: 
+            x -> pose of robot x co-ordinate 
+            y -> pose of robot y co-ordinate 
+            frontier -> is chosen waypoint a frontier 
+
+        Returns:
+                whether or not waypoint is valid and the cost of the robots average pose 
+        
+        """
         waypointValid = False
 
         closeToFailed = False
@@ -823,7 +835,7 @@ class Explorer(Node):
 
         cost = self.S_Map_Global_Cost.average(x, y, 3)
         
-        if not stuck:
+        if not frontier:
             notExplored = (self.S_Map_Occupancy.average(x, y, self.SEARCH_RADIUS) == -1)
 
             waypointValid = (notExplored == True) and (closeToFailed != True) and (closeToCompleted != True)
