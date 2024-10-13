@@ -10,7 +10,7 @@ from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import OccupancyGrid
 
-from ros2_aruco_interfaces.msg import ArucoMarkers
+#from ros2_aruco_interfaces.msg import ArucoMarkers
 
 import time
 import numpy as np
@@ -24,12 +24,12 @@ NODE_NAME_INDEX = 0
 
 CONSTANT_PI = math.pi
 
-ANGLE_WIDTH_DEG = 10
+ANGLE_WIDTH_DEG = 2
 ANGLE_WIDTH_RAD = ANGLE_WIDTH_DEG*(CONSTANT_PI/180.)
 
 NUM_DIRECTIONS = int(360/ANGLE_WIDTH_DEG)
 
-DISTANCE_STEP = 1
+DISTANCE_STEP = 2
 LASER_SCAN_MIN_RANGE = 50
 
 LAMBDA_deg_to_rad = lambda x : x*(CONSTANT_PI/180.)
@@ -314,7 +314,10 @@ class Subscriber_Map(object):
     
     def get_data_with_cartesian(self, x: float, y: float) -> float:
         index = self.cartesian_to_array_index(x, y)
-        return self.mapData[index]
+        if (index != None):
+            return self.mapData[index]
+        else:
+            return 100
 
     def get_data_with_index(self, index: int) -> float:
         return self.mapData[index]
@@ -430,66 +433,66 @@ class CostMap_Subscriber(Subscriber_Map):
         super().__init__(node, "/global_costmap/costmap")
         
 
-class ArucoMarker_Subscriber(object):
-    """
-    Subscription to /aruco_markers
-    """
+# class ArucoMarker_Subscriber(object):
+#     """
+#     Subscription to /aruco_markers
+#     """
     
-    subscription: rclpy.subscription = None
+#     subscription: rclpy.subscription = None
 
-    def __init__(self, node: Node) -> None:
-        """
-            Sets up a subscription to the /aruco_markers topic
+#     def __init__(self, node: Node) -> None:
+#         """
+#             Sets up a subscription to the /aruco_markers topic
 
-            params:
-                node -> Node that is subscribing to the topic
-        """
-        # Wait until there is a publisher to /aruco_markers
-        self.wait_aruco_node_running(node)
+#             params:
+#                 node -> Node that is subscribing to the topic
+#         """
+#         # Wait until there is a publisher to /aruco_markers
+#         self.wait_aruco_node_running(node)
     
-        self.subscription = node.create_subscription(
-            ArucoMarkers, 
-            "aruco_markers",
-            self.callback,
-            10
-        )
+#         self.subscription = node.create_subscription(
+#             ArucoMarkers, 
+#             "aruco_markers",
+#             self.callback,
+#             10
+#         )
 
-    def wait_aruco_node_running(self, node: Node):
-        """
-            Blocks until a aruco_node is publishing to /aruco_markers
+#     def wait_aruco_node_running(self, node: Node):
+#         """
+#             Blocks until a aruco_node is publishing to /aruco_markers
 
-            params:
-                node -> Node that is subscribing to the topic
-        """
+#             params:
+#                 node -> Node that is subscribing to the topic
+#         """
 
-        while True:
-            # Get publishers of the /aruco_markers topic
-            aruco_marker_publishers = node.get_publishers_info_by_topic("/aruco_markers")
+#         while True:
+#             # Get publishers of the /aruco_markers topic
+#             aruco_marker_publishers = node.get_publishers_info_by_topic("/aruco_markers")
 
-            # Check who is currently publishing to this topic
-            if not aruco_marker_publishers:
-                # If no publishers exist, block for another 5 seconds and try again
-                log("INFO", node, "Aruco Node not running - Trying again in 5 seconds", True)
-                time.sleep(5)
+#             # Check who is currently publishing to this topic
+#             if not aruco_marker_publishers:
+#                 # If no publishers exist, block for another 5 seconds and try again
+#                 log("INFO", node, "Aruco Node not running - Trying again in 5 seconds", True)
+#                 time.sleep(5)
 
-            else:
-                # A publisher exists
-                publisher = aruco_marker_publishers[0]._node_name
+#             else:
+#                 # A publisher exists
+#                 publisher = aruco_marker_publishers[0]._node_name
 
-                if publisher == "aruco_node":
-                    # If publish is aruco_node, then stop blocking and continue the program
-                    log("INFO", node, "Aruco Detection is Running, starting map_exporler node", True)
-                    break
+#                 if publisher == "aruco_node":
+#                     # If publish is aruco_node, then stop blocking and continue the program
+#                     log("INFO", node, "Aruco Detection is Running, starting map_exporler node", True)
+#                     break
 
-    def callback(self, msg: ArucoMarkers) -> None:
-        """
-            Call back for aruco_markers Subscription
+#     def callback(self, msg: ArucoMarkers) -> None:
+#         """
+#             Call back for aruco_markers Subscription
 
-            Params:
-                msg -> conatins data of the current poses and IDs of the detected aruco_marketrs
-        """
+#             Params:
+#                 msg -> conatins data of the current poses and IDs of the detected aruco_marketrs
+#         """
         
-        print(msg)
+#         print(msg)
 
 
 
@@ -516,7 +519,7 @@ class Explorer(Node):
     S_BehaviourTree: BehaviourTreeLog_Handler = None # Subscription to /behaviour_tree_log
     S_Map_Occupancy: OccupancyGrid_Subscriber = None # Subscription to /map
     S_Map_Global_Cost: CostMap_Subscriber = None # Subscription to /map
-    S_Aruco: ArucoMarker_Subscriber = None # Subscription to /aruco_marker
+    #S_Aruco: ArucoMarker_Subscriber = None # Subscription to /aruco_marker
 
     waypointCounter: int = 0 # Total waypoints published
 
@@ -567,7 +570,7 @@ class Explorer(Node):
         # Check if aruco_detect is True
         if rosParam_aruco_detect == True:
             log("WARN", self, "Running map_explorer with Aruco decetion", True)
-            self.S_Aruco = ArucoMarker_Subscriber(self) # Subscription to /aruco_marker 
+            #self.S_Aruco = ArucoMarker_Subscriber(self) # Subscription to /aruco_marker 
         else:
             log("WARN", self, "Running map_explorer without Aruco decetion", True)
     
@@ -667,6 +670,41 @@ class Explorer(Node):
 
         return unoccupiedDistanceVectors
     
+    def check_unoccupied_directions_vectors(self, unoccupiedDirectionsVectors: list[np.ndarray]):
+        # Go thorugh each of these position vectors
+        lowestCost = None
+        waypoint = None
+
+        for unoccupiedDirectionVector in unoccupiedDirectionsVectors:
+            i = 0
+            for i, completedWaypointVector in enumerate(self.LOCAL_completedWaypointVectors):
+                robotPoseVector = np.array(([self.S_Odom.get_X(), self.S_Odom.get_Y()]))
+                distanceFromCompletedWaypoint = np.linalg.norm(completedWaypointVector - robotPoseVector)
+                distanceFromNewWaypointVector = np.linalg.norm(completedWaypointVector - unoccupiedDirectionVector)
+
+                # Check to see if the new position vector will take the robot further away from the previous comleted waypoints
+                if (distanceFromCompletedWaypoint - distanceFromNewWaypointVector) > 0:
+                    # If this waypoint brings the robot closer to a previous waypoint, do not use this waypoint
+                    break
+            
+            if (i == len(self.LOCAL_completedWaypointVectors)-1):
+                # If this waypoint takes the robot further away from every previous waypoint, create a waypoint to publish to goal_pose topic
+                waypointX = unoccupiedDirectionVector[0]
+                waypointY = unoccupiedDirectionVector[1]
+
+                # Check to see if waypoint is in an unexplored area
+                waypointValid, cost = self.check_waypoint(waypointX, waypointY, False)
+
+                if (waypointValid):
+                    if lowestCost == None:
+                        lowestCost = cost
+                        waypoint = self.create_waypoint(waypointX, waypointY, self.S_Odom.get_W())
+                    else:
+                        if cost < lowestCost:
+                            lowestCost = cost
+                            waypoint = self.create_waypoint(waypointX, waypointY, self.S_Odom.get_W())
+
+        return waypoint
 
     def create_waypoint(self, x: float, y: float, w: float) -> PoseStamped:
         """
@@ -700,18 +738,20 @@ class Explorer(Node):
         waypoint = None
         stuck = False
 
-        if previousPathFailed == True:
-            log("INFO", self, "FAILED", self.debug)
-            currentX = self.currentWaypoint.pose.position.x
-            currentY = self.currentWaypoint.pose.position.y
-            self.failedWaypointsVectors.append(np.array([currentX, currentY]))
-        else:
-            log("INFO", self, "SUCCESS", self.debug)
-
-        # Robots first waypoint
         if (self.waypointCounter != 0):
             robotPoseVector = np.array(([self.S_Odom.get_X(), self.S_Odom.get_Y()]))
             self.LOCAL_completedWaypointVectors.append(robotPoseVector)
+
+            if previousPathFailed == True:
+                log("INFO", self, "FAILED", self.debug)
+                currentX = self.currentWaypoint.pose.position.x
+                currentY = self.currentWaypoint.pose.position.y
+                self.failedWaypointsVectors.append(np.array([currentX, currentY]))
+            else:
+                log("INFO", self, "SUCCESS", self.debug)
+                currentX = self.currentWaypoint.pose.position.x
+                currentY = self.currentWaypoint.pose.position.y
+                self.GLOBAL_completedWaypointVectors.append(np.array([currentX, currentY]))
         
         if len(self.LOCAL_completedWaypointVectors) > 5:
             self.LOCAL_completedWaypointVectors = self.LOCAL_completedWaypointVectors[1:]
@@ -726,57 +766,50 @@ class Explorer(Node):
         # Calculate free angles
         unoccupiedDirections = self.find_unoccupied_directions()
         # Calculate position vectors
-        unoccupiedDirectionVectors = self.calculate_unoccupied_directions_vectors(unoccupiedDirections)
+        unoccupiedDirectionsVectors = self.calculate_unoccupied_directions_vectors(unoccupiedDirections)
 
-        # Go thorugh each of these position vectors
-        for unoccupiedDirectionVector in unoccupiedDirectionVectors:
-            i = 0
-            for i, completedWaypointVector in enumerate(self.LOCAL_completedWaypointVectors):
-                robotPoseVector = np.array(([self.S_Odom.get_X(), self.S_Odom.get_Y()]))
-                distanceFromCompletedWaypoint = np.linalg.norm(completedWaypointVector - robotPoseVector)
-                distanceFromNewWaypointVector = np.linalg.norm(completedWaypointVector - unoccupiedDirectionVector)
-
-                # Check to see if the new position vector will take the robot further away from the previous comleted waypoints
-                if (distanceFromCompletedWaypoint - distanceFromNewWaypointVector) > 0:
-                    # If this waypoint brings the robot closer to a previous waypoint, do not use this waypoint
-                    break
-            
-            if (i == len(self.LOCAL_completedWaypointVectors)-1):
-                # If this waypoint takes the robot further away from every previous waypoint, create a waypoint to publish to goal_pose topic
-                waypointX = unoccupiedDirectionVector[0]
-                waypointY = unoccupiedDirectionVector[1]
-
-                # Check to see if waypoint is in an unexplored area
-
-                waypointValid = self.check_waypoint(waypointX, waypointY, False)
-
-                if (waypointValid):
-                    waypoint = self.create_waypoint(unoccupiedDirectionVector[0], unoccupiedDirectionVector[1], self.S_Odom.get_W())
-                    log("INFO", self, str(self.S_Map_Global_Cost.average(waypointX, waypointY, 2)), True)
-                    self.waypointCounter += 1
-                    break
+        waypoint = self.check_unoccupied_directions_vectors(unoccupiedDirectionsVectors)
 
         if (waypoint == None):
             # If the robot could not find any waypoints
             log("INFO", self, "Stuck, finding unexplored frontier... ", self.debug)
+
             stuck = True
+            lowestCost = None
 
             for index in range(len(self.S_Map_Occupancy.get_data_array())):
                 x, y = self.S_Map_Occupancy.array_index_to_cartesian(index)
-                waypointValid = self.check_waypoint(x, y, True)
+                    
+                waypointValid, cost = self.check_waypoint(x, y, True)
+
                 # Check to see if point is on a frontier
 
                 if waypointValid:
-                    waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
-                    log("INFO", self, "Done!", self.debug)
-                    break
+                    if abs(cost + 1) < 0.01:
+                        waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
+                        break
+                    elif lowestCost == None:
+                        lowestCost = cost
+                        waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
+                    elif (cost < lowestCost):
+                        lowestCost = cost
+                        waypoint = self.create_waypoint(x, y, self.S_Odom.get_W())
 
-        self.send_waypoint(waypoint)
+        
+        if waypoint != None:
+            self.currentWaypoint = waypoint
+            self.send_waypoint(waypoint)
+            self.waypointCounter += 1
+        else:
+            log("INFO", self, "Map fully explored ", self.debug)
+            waypoint = self.create_waypoint(0., 0., 0.)
+            self.send_waypoint(waypoint)
 
-    def check_waypoint(self, x, y, stuck):
+    def check_waypoint(self, x: float, y: float, stuck):
         waypointValid = False
 
         closeToFailed = False
+
         for waypoint in self.failedWaypointsVectors:
             if abs(x - waypoint[0]) < 0.1 and abs(y - waypoint[1]) < 0.1:
                 closeToFailed = True
@@ -787,24 +820,22 @@ class Explorer(Node):
             if abs(x - waypoint[0]) < 0.1 and abs(y - waypoint[1]) < 0.1:
                 closeToCompleted = True
                 break
-        #lowCost = (self.S_Map_Global_Cost.average(x, y, 2) <= 1)
-        
-        if self.S_Map_Global_Cost is not None: 
-           lowCost =(self.S_Map_Global_Cost.average(x, y, 2) <= 1)
+
+        cost = self.S_Map_Global_Cost.average(x, y, 3)
         
         if not stuck:
             notExplored = (self.S_Map_Occupancy.average(x, y, self.SEARCH_RADIUS) == -1)
 
-            waypointValid = (notExplored == True) and (closeToFailed != True) and (closeToCompleted != True) and (lowCost == True)
+            waypointValid = (notExplored == True) and (closeToFailed != True) and (closeToCompleted != True)
         
         else:
             perecentFree, percentUnExplored = self.S_Map_Occupancy.get_surrounding_percentages(x, y, self.SEARCH_RADIUS)
 
-            onFrontier = abs(percentUnExplored - perecentFree) < 0.01 and abs(percentUnExplored - 0.5) < 0.01
+            onFrontier = (abs(percentUnExplored - perecentFree) < 0.02) and (abs(percentUnExplored - 0.5) < 0.02)
 
-            waypointValid = (closeToFailed != True) and (closeToCompleted != True) and (lowCost == True) and (onFrontier == True)
+            waypointValid = (closeToFailed != True) and (closeToCompleted != True) and (onFrontier == True)
 
-        return waypointValid
+        return waypointValid, cost
                 
 
     
