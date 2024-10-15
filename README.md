@@ -4,11 +4,11 @@
 /goal_pose
 
 ### Subscriptions
-/odom
-/scan
-/behaviour_tree_log
-/map
-/aruco_markers (Only subscribed if aruco_detect is True in params.yaml)
+/odom <br />
+/scan <br />
+/behaviour_tree_log <br />
+/map <br />
+/global_costmap_costmap <br />
 
 # Installing Packages
 1) Navigate to your worspace's src folder and clone this repository
@@ -21,7 +21,7 @@ git clone git@github.com:Brog03/metr4202_2024_team19.git
 ```
 cd ../
 colcon build --symlink-install
-source ~/.bashrc
+source install/setup.bash
 ```
 
 # Running Package
@@ -51,9 +51,9 @@ When map_explorer node is running and has outputted READY, open the rviz window,
 ## Map_explorer options
 The map_explorer node is loaded with parameters located in params.yaml in map_explorer_bringup
 
-aruco_detect -> Whether to enable aruco detection
-num_aruco_markers -> Total number of markers the node will look for
-debug -> Whether to enable output from the map_explorer node
+aruco_detect -> Whether to enable aruco detection <br />
+num_aruco_markers -> Total number of markers the node will look for <br />
+debug -> Whether to enable output from the map_explorer node <br />
 
 Initial pose is automatically set through loading the varibles from params.yaml
 
