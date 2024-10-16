@@ -9,7 +9,6 @@ import rclpy.subscription
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import OccupancyGrid
-
 #from ros2_aruco_interfaces.msg import ArucoMarkers
 
 import time
@@ -48,7 +47,7 @@ class BehaviourTreeLog_Handler(object):
 
         params:
             node -> Node that is subscribing to the topic
-            functionHandlers -> An array of tuples that store what function should run based a node and its status
+            functionHandlers -> An array of tuples that store what function should run based on node and its status
                 [
                     (Node1 Name, Node1 Status, function, argument_to_function), 
                     (..., ..., ..., ...), 
@@ -132,18 +131,18 @@ class LaserScan_Subscriber(object):
     
     def get_scan_average(self, startIndex: float, endIndex: float) -> float:
         """
-            Gets the average value of the laserScan data between two indexes
+            Gets the average value of the laser scan data between two indexes
 
             Params:
-                startIndex -> first index in the laser_scan_data array
-                endIndex -> last index in the laser_scan_data array
+                startIndex -> first index in the laser scan data array
+                endIndex -> last index in the laser scan data array
 
             Returns:
                 Average value bewteen these two indexes
         """
 
         dataSum = 0
-        #sum all values in the laserScan data list 
+        #sum all values in laser scan data list 
         for i in range(startIndex, endIndex):
             dataSum += self.data[i]
 
@@ -727,7 +726,6 @@ class Explorer(Node):
                 A PoseStamped waypoint for robot to travel towards  
         """
 
-        # Go thorugh each of these position vectors
         lowestCost = None
         waypoint = None
         
