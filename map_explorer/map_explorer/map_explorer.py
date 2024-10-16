@@ -987,18 +987,15 @@ def main(args=None):
     """
         Entry Point
     """
-
-    # 
     os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] [{time}]: {message}"
     
-    ##
     try:
-        rclpy.init(args=args) ##
-        map_explorer = Explorer() ##
-        rclpy.spin(map_explorer) ##
+        rclpy.init(args=args) 
+        map_explorer = Explorer() 
+        rclpy.spin(map_explorer) 
        
     except (KeyboardInterrupt):
-        log("WARN", map_explorer, "Exiting", True) ##
+        log("WARN", map_explorer, "Exiting", True) 
     
 
 if __name__ == "__main__":
