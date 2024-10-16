@@ -33,15 +33,10 @@ ros2 launch turtlebot3_gazebo <world_name>.launch.py
 
 Terminal 2 - launch the nav2 package
 ```
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 ```
 
-Terminal 3 - launch the SLAM package 
-```
-ros2 launch slam_toolbox online_async_launch.py
-```
-
-Terminal 4 - Finally launch the package by creating a new termianl and run
+Terminal 3 - Launch the package by creating a new termianl and run
 ```
 ros2 launch map_explorer_bringup map_explorer_bringup.launch.py
 ```
