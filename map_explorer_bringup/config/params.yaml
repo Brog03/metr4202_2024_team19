@@ -1,6 +1,6 @@
 Explorer:
   ros__parameters:
-    aruco_detect: False
+    aruco_detect: True
     num_aruco_markers: 10
     debug: True
 

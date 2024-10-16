@@ -1,3 +1,5 @@
+VERSION = "1.0.0"
+
 import rclpy
 import rclpy.logging
 from rclpy.node import Node
@@ -626,6 +628,8 @@ class Explorer(Node):
         self.S_Map_Occupancy = OccupancyGrid_Subscriber(self) # Subscription to /map
         self.S_BehaviourTree = BehaviourTreeLog_Handler(self, FUNCTION_HANDLERS) # Subscription to /behaviour_tree_log 
         self.S_Map_Global_Cost = CostMap_Subscriber(self) # subscriton to /cost_map 
+
+        log("WARN", self, "VERSION: " + VERSION, True) ##
 
         # Check if aruco_detect is True
         if rosParam_aruco_detect == True:
