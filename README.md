@@ -64,14 +64,11 @@ ros2 launch map_explorer_bringup map_explorer_bringup.launch.py
 
 Terminal 2 - launch the aruco_node
 ```
-ros2 run ros2_aruco aruco_node
+ros2 launch ros2_aruco aruco_recognition.launch.py
 ```
 <br />
 When map_explorer node is running and has outputted READY, open the rviz window, and give an initial waypoint that is close to the turtlebot (Testing)
 <br />
-
-
-
 
 
 ## Map_explorer options
