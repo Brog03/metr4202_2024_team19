@@ -43,7 +43,7 @@ ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam
 
 ## Without Aruco Detection
 NOTE - Before Launching map_explorer: <br />
-- Make sure aruco_detect is set to False in params.yaml
+- Make sure aruco_detect is set to False in params.yaml which is found in map_explorer_bringup folder
 
 Open another new terminal and launch the package by creating a new termianl and run
 ```
@@ -52,7 +52,7 @@ ros2 launch map_explorer_bringup map_explorer_bringup.launch.py
 
 ## With Aruco Dectecion
 NOTE - Before Launching map_explorer: <br />
-- Make sure aruco_detect is set to True in params.yaml
+- Make sure aruco_detect is set to True in params.yaml which is found in map_explorer_bringup folder
 - When map_explorer is launched, it will wait until aruco_node has created the /aruco_markers topic
 
 
