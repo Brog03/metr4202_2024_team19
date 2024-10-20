@@ -1,8 +1,10 @@
-#BLahhh
+VERSION = "1.0.0"
+
 import rclpy
 import rclpy.logging
 from rclpy.node import Node
 
+import os
 
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.msg import BehaviorTreeLog
@@ -10,13 +12,11 @@ import rclpy.subscription
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import OccupancyGrid
-
-#from ros2_aruco_interfaces.msg import ArucoMarkers
+from ros2_aruco_interfaces.msg import ArucoMarkers
 
 import time
 import numpy as np
 import math
-import os
 
 FUNCTION_HANDLE_INDEX_ARGUMENT = 3
 FUNCTION_HANDLE_INDEX = 2
@@ -491,66 +491,68 @@ class CostMap_Subscriber(Subscriber_Map):
         super().__init__(node, "/global_costmap/costmap") 
         
 
-# class ArucoMarker_Subscriber(object):
-#     """
-#     Subscription to /aruco_markers
-#     """
+class ArucoMarker_Subscriber(object):
+    """
+    Subscription to /aruco_markers
+    """
     
-#     subscription: rclpy.subscription = None
+    subscription: rclpy.subscription = None
+    node: Node = None
 
-#     def __init__(self, node: Node) -> None:
-#         """
-#             Sets up a subscription to the /aruco_markers topic
+    def __init__(self, node: Node) -> None:
+        """
+            Sets up a subscription to the /aruco_markers topic
 
-#             params:
-#                 node -> Node that is subscribing to the topic
-#         """
-#         # Wait until there is a publisher to /aruco_markers
-#         self.wait_aruco_node_running(node)
+            params:
+                node -> Node that is subscribing to the topic
+        """
+        # Wait until there is a publisher to /aruco_markers
+        self.node = node
+        self.wait_aruco_node_running(node)
     
-#         self.subscription = node.create_subscription(
-#             ArucoMarkers, 
-#             "aruco_markers",
-#             self.callback,
-#             10
-#         )
+        self.subscription = node.create_subscription(
+            ArucoMarkers, 
+            "aruco_markers",
+            self.callback,
+            10
+        )
 
-#     def wait_aruco_node_running(self, node: Node):
-#         """
-#             Blocks until a aruco_node is publishing to /aruco_markers
+    def wait_aruco_node_running(self, node: Node):
+        """
+            Blocks until a aruco_node is publishing to /aruco_markers
 
-#             params:
-#                 node -> Node that is subscribing to the topic
-#         """
+            params:
+                node -> Node that is subscribing to the topic
+        """
 
-#         while True:
-#             # Get publishers of the /aruco_markers topic
-#             aruco_marker_publishers = node.get_publishers_info_by_topic("/aruco_markers")
+        while True:
+            # Get publishers of the /aruco_markers topic
+            aruco_marker_publishers = node.get_publishers_info_by_topic("/aruco_markers")
 
-#             # Check who is currently publishing to this topic
-#             if not aruco_marker_publishers:
-#                 # If no publishers exist, block for another 5 seconds and try again
-#                 log("INFO", node, "Aruco Node not running - Trying again in 5 seconds", True)
-#                 time.sleep(5)
+            # Check who is currently publishing to this topic
+            if not aruco_marker_publishers:
+                # If no publishers exist, block for another 5 seconds and try again
+                log("INFO", node, "Aruco Node not running - Trying again in 5 seconds", True)
+                time.sleep(5)
 
-#             else:
-#                 # A publisher exists
-#                 publisher = aruco_marker_publishers[0]._node_name
+            else:
+                # A publisher exists
+                publisher = aruco_marker_publishers[0]._node_name
 
-#                 if publisher == "aruco_node":
-#                     # If publish is aruco_node, then stop blocking and continue the program
-#                     log("INFO", node, "Aruco Detection is Running, starting map_exporler node", True)
-#                     break
+                if publisher == "aruco_node":
+                    # If publish is aruco_node, then stop blocking and continue the program
+                    log("INFO", node, "Aruco Detection is Running, starting map_exporler node", True)
+                    break
 
-#     def callback(self, msg: ArucoMarkers) -> None:
-#         """
-#             Call back for aruco_markers Subscription
+    def callback(self, msg: ArucoMarkers) -> None:
+        """
+            Call back for aruco_markers Subscription
 
-#             Params:
-#                 msg -> conatins data of the current poses and IDs of the detected aruco_marketrs
-#         """
+            Params:
+                msg -> conatins data of the current poses and IDs of the detected aruco_marketrs
+        """
         
-#         print(msg)
+        log("INFO", self.node, str(msg), True)
 
 
 
@@ -577,7 +579,7 @@ class Explorer(Node):
     S_BehaviourTree: BehaviourTreeLog_Handler = None # Subscription to /behaviour_tree_log
     S_Map_Occupancy: OccupancyGrid_Subscriber = None # Subscription to /map
     S_Map_Global_Cost: CostMap_Subscriber = None # Subscription to /map
-    #S_Aruco: ArucoMarker_Subscriber = None # Subscription to /aruco_marker
+    S_Aruco: ArucoMarker_Subscriber = None # Subscription to /aruco_marker
 
     waypointCounter: int = 0 # Total waypoints published
 
@@ -625,12 +627,14 @@ class Explorer(Node):
         self.S_Scan = LaserScan_Subscriber(self) # Setup /scan subscription
         self.S_Map_Occupancy = OccupancyGrid_Subscriber(self) # Subscription to /map
         self.S_BehaviourTree = BehaviourTreeLog_Handler(self, FUNCTION_HANDLERS) # Subscription to /behaviour_tree_log 
-        self.S_Map_Global_Cost = CostMap_Subscriber(self) # subscriton to /cost_map t
+        self.S_Map_Global_Cost = CostMap_Subscriber(self) # subscriton to /cost_map 
+
+        log("WARN", self, "VERSION: " + VERSION, True) ##
 
         # Check if aruco_detect is True
         if rosParam_aruco_detect == True:
             log("WARN", self, "Running map_explorer with Aruco decetion", True)
-            #self.S_Aruco = ArucoMarker_Subscriber(self) # Subscription to /aruco_marker 
+            self.S_Aruco = ArucoMarker_Subscriber(self) # Subscription to /aruco_marker 
         else:
             log("WARN", self, "Running map_explorer without Aruco decetion", True)
     
