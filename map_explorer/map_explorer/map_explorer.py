@@ -608,8 +608,6 @@ class ArucoMarker_Subscriber(object):
                 self.arucoMarkersPoses.append([currentID, [actualArucoX, actualArucoY], "Aruco Marker -> ID: {ID} x: {X:.4f}, y: {Y:.4f}"])
                 self.totalArucoMarkers += 1
 
-                log("INFO", self.node, f"New Aruco Marker -> ID: {currentID}", True)
-
             else:
                 savedArucoMarker[1][0] = ((arucoXtoRobot + self.S_Odom.get_X()) + savedX)/2
                 savedArucoMarker[1][1] = ((arucoYtoRobot + self.S_Odom.get_Y()) + savedY)/2
