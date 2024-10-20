@@ -654,13 +654,13 @@ class Explorer(Node):
     def find_unoccupied_directions(self) -> list:
         """
             Divides the /scan data into ANGLE_WIDTH_RAD segments (e.g 10deg segments would have 36 total segments)
-            and gets the average scan distance for each segment and checks to see if it can travel in the middle of that segment
+            and gets average scan distance for each segment and checks to see if it can travel in the middle of that segment
 
             Returns:
                 A list of angles (In reference to the point (0, 0, 0)) in which the robot can travel in
         """
 
-        unoccupiedDirections = [] # initialise empty list for directions which robot can travel in 
+        unoccupiedDirections = [] # empty list for directions which robot can travel in 
         subScanSize = int(len(self.S_Scan.get_Data())/NUM_DIRECTIONS) # size of the scan data in each 2 deg segment 
 
         for i in range(NUM_DIRECTIONS):
@@ -689,7 +689,7 @@ class Explorer(Node):
 
     def calculate_unoccupied_directions_vectors(self, unoccupiedDirections: list[float]) -> list[np.ndarray]:
         """
-            Calculates position vectors for where the robot will travel to based on DISTANCE_STEP and the 
+            Calculates position vectors for where the robot will travel based on DISTANCE_STEP and 
             free angles
 
             Params:
@@ -716,8 +716,8 @@ class Explorer(Node):
     
     def check_unoccupied_directions_vectors(self, unoccupiedDirectionsVectors: list[np.ndarray]):
         """
-            Generate waypoints which are unexplored and further away from previously
-            completed waypoints in each unoccupied direction (validate a waypoint)
+            Generate waypoint which is unexplored and further away from previously
+            completed waypoints in the unoccupied directions list (validate a waypoint)
 
             Params: 
                 unoccupiedDirectionsVectors -> a list of angles in which there are no obstacles 
@@ -738,7 +738,7 @@ class Explorer(Node):
                 # distance from an unoccupied direction to completed waypoint 
                 distanceFromNewWaypointVector = np.linalg.norm(completedWaypointVector - unoccupiedDirectionVector)
 
-                # Check to see if the new position vector will take the robot further away from the previous comleted waypoints
+                # Check if new waypoint will take the robot further away from the previous comleted waypoints
                 if (distanceFromCompletedWaypoint - distanceFromNewWaypointVector) > 0:
                     # If this waypoint brings the robot closer to a previous waypoint, do not use this waypoint
                     break
@@ -820,8 +820,7 @@ class Explorer(Node):
 
     def chooseWaypoint(self, previousPathFailed: bool) -> None:
         """
-        Chooses waypoints based on frontier search or checking for unoccupied directions
-        (free angles and positions) during robots laser scan
+        Chooses waypoints based on unoccupied directions (free angles and positions) during robots laser scan
 
         Params:
             previousPathFailed -> was the previous waypoint not successful
@@ -856,6 +855,7 @@ class Explorer(Node):
         if len(self.LOCAL_completedWaypointVectors) > 5:
             self.LOCAL_completedWaypointVectors = self.LOCAL_completedWaypointVectors[1:]
 
+        #check if robot is looking for frontier
         if frontierSearch:
             currentX = self.S_Odom.get_X() 
             currentY = self.S_Odom.get_Y()
@@ -867,9 +867,9 @@ class Explorer(Node):
             # choosing waypoints based on unoccupied directions and distances from laser scan data 
             # a valid waypoint is chosen if it is unexplored and some distance away from previous 5 completed waypoints 
 
-        # Calculate free angles
+        # find all free angles
         unoccupiedDirections = self.find_unoccupied_directions()
-        # Calculate position vectors
+        # Calculate position for robot to in unoccupied direction
         unoccupiedDirectionsVectors = self.calculate_unoccupied_directions_vectors(unoccupiedDirections)
         # check if position vector is a valid waypoint 
         waypoint = self.check_unoccupied_directions_vectors(unoccupiedDirectionsVectors)
