@@ -1,10 +1,10 @@
 # The Team
-Name - Student ID - Username
+Name - Student ID - Username <br /> <br />
 
-Jack Boyd - 47500037 - Brog03
-Ole Fjeld Haugstvedt - 49055942 - olefhau
-Ngo Sen Lui - 47266641 - Gordon-Lui517
-Amaana Hussain - 45827758 - AmaanaHussain
+Jack Boyd - 47500037 - Brog03 <br />
+Ole Fjeld Haugstvedt - 49055942 - olefhau <br />
+Ngo Sen Lui - 47266641 - Gordon-Lui517 <br />
+Amaana Hussain - 45827758 - AmaanaHussain <br />
 
 # Node Structure
 ## map_explorer
