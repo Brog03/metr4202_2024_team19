@@ -175,7 +175,7 @@ class Odom_Subscriber(object):
             Odometry, # odometry msg class
             "odom", # /odom topic 
             self.callback, # callback function for /odom 
-            10 ###############
+            10 
         )
 
     def callback(self, msg: Odometry) -> None:
@@ -201,12 +201,12 @@ class Odom_Subscriber(object):
                 roll, pitch and yaw (rads)
         
         """
-        x = quaterion.x # robots quaterion orientation in x 
-        y = quaterion.y # robots quaterion orientation in y 
-        z = quaterion.z # robots quaterion orientation in z
-        w = quaterion.w # robots quaterion angle  
+        x = quaterion.x # robots position in x 
+        y = quaterion.y # robots position in y 
+        z = quaterion.z # robots position in z
+        w = quaterion.w # robots orientation in quaterions  
 
-        # robots rotation in euler_co-ordinates
+        # robots orientation in euler_co-ordinates
         t3 = +2.0 * (w * z + x * y)
         t4 = +1.0 - 2.0 * (y * y + z * z)
         yaw_z = math.atan2(t3, t4)
@@ -345,7 +345,7 @@ class Subscriber_Map(object):
     
     def get_data_with_cartesian(self, x: float, y: float) -> float:
         """
-            Get map data at a specific index from cartesian co-ordinates 
+            Get vaulue of map data from cartesian co-ordinates 
 
             Params: 
                 x-> x value of grid cell 
@@ -360,7 +360,7 @@ class Subscriber_Map(object):
         index = self.cartesian_to_array_index(x, y) # get map index for each cartesian co-ordinate 
        
         if (index != None):
-            # checks if map index is not none and returns the value for that map index 
+            # checks if map index is not none and returns the value at that map index 
             data = self.mapData[index]
         else:
             # if map index is none then return 100 
