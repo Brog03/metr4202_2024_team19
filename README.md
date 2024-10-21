@@ -24,6 +24,8 @@ Amaana Hussain - 45827758 - AmaanaHussain <br />
 ```
 cd path_to_worspace/src/
 git clone git@github.com:Brog03/metr4202_2024_team19.git
+cd metr4202_2024_team19
+git submodule update --init --recursive
 ```
 
 2) You will need to install tf_transformatiosn for ros2 humble, do this by running the following command
