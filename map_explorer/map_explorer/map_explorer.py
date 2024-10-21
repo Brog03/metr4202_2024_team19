@@ -1106,7 +1106,7 @@ class Explorer(Node):
                 closeToCompleted = True
                 break
 
-        cost = self.S_Map_Global_Cost.average(x, y, 5) # get average cost of robots pose and 3 nearest points 
+        cost = self.S_Map_Global_Cost.average(x, y, 5) # get average cost of robots pose and 5 nearest points 
         
         if not stuck:
             notExplored = (self.S_Map_Occupancy.average(x, y, self.SEARCH_RADIUS) == -1)
