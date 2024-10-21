@@ -39,7 +39,6 @@ ros2 launch turtlebot3_gazebo <world_name>.launch.py
 Terminal 2 - launch the nav2 package
 ```
 ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
-ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True slam:=True
 ```
 
 ## Without Aruco Detection
