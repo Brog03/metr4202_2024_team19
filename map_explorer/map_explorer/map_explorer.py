@@ -1077,7 +1077,7 @@ class Explorer(Node):
 
     def check_waypoint(self, x: float, y: float, stuck):
         """
-            checks frontier waypoint is valid 
+            checks waypoint is valid 
 
             Params: 
                 x -> pose of robot in x 
