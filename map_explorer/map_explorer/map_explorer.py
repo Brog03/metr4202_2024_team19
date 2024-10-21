@@ -175,7 +175,7 @@ class Odom_Subscriber(object):
             Odometry, # odometry msg class
             "odom", # /odom topic 
             self.callback, # callback function for /odom 
-            10 ###############
+            10 
         )
 
     def callback(self, msg: Odometry) -> None:
@@ -201,12 +201,12 @@ class Odom_Subscriber(object):
                 roll, pitch and yaw (rads)
         
         """
-        x = quaterion.x # robots quaterion orientation in x 
-        y = quaterion.y # robots quaterion orientation in y 
-        z = quaterion.z # robots quaterion orientation in z
-        w = quaterion.w # robots quaterion angle  
+        x = quaterion.x # robots position in x 
+        y = quaterion.y # robots position in y 
+        z = quaterion.z # robots position in z
+        w = quaterion.w # robots orientation in quaterions  
 
-        # robots rotation in euler_co-ordinates
+        # robots orientation in euler_co-ordinates
         t3 = +2.0 * (w * z + x * y)
         t4 = +1.0 - 2.0 * (y * y + z * z)
         yaw_z = math.atan2(t3, t4)
@@ -345,7 +345,7 @@ class Subscriber_Map(object):
     
     def get_data_with_cartesian(self, x: float, y: float) -> float:
         """
-            Get map data at a specific index from cartesian co-ordinates 
+            Get vaulue of map data from cartesian co-ordinates 
 
             Params: 
                 x-> x value of grid cell 
@@ -360,7 +360,7 @@ class Subscriber_Map(object):
         index = self.cartesian_to_array_index(x, y) # get map index for each cartesian co-ordinate 
        
         if (index != None):
-            # checks if map index is not none and returns the value for that map index 
+            # checks if map index is not none and returns the value at that map index 
             data = self.mapData[index]
         else:
             # if map index is none then return 100 
@@ -485,6 +485,17 @@ class OccupancyGrid_Subscriber(Subscriber_Map):
         return onFrontier
     
     def search_around_grid_cell(self, x, y, radius):
+        """
+            Searches for grid cells surrounding a specified (x, y) position within a given radius.
+
+            Params:
+                x (float): The x-coordinate of the grid cell around which the search is performed.
+                y (float): The y-coordinate of the grid cell around which the search is performed.
+                radius (int): The search radius in grid cells, defining the area to be explored around (x, y).
+
+            Returns:
+                list[int]: A list of indices corresponding to the neighboring grid cells within the radius.
+        """
         neighbouringGridCells = []
 
         for xSearch in range(-radius, radius):
@@ -500,8 +511,6 @@ class OccupancyGrid_Subscriber(Subscriber_Map):
                     neighbouringGridCells.append(index)
 
         return neighbouringGridCells
-
-
 
 
 
@@ -585,15 +594,17 @@ class ArucoMarker_Subscriber(object):
             Params:
                 msg -> conatins data of the current poses and IDs of the detected aruco_marketrs
         """
-        
+        #Loop over detected Aruco Markers by index and ID
         for index, currentID in enumerate(msg.marker_ids):
             used = False
 
+            #Check if the current detected marker ID is already saved
             for savedArucoMarker in self.arucoMarkersPoses:
-                savedID = savedArucoMarker[0]
-                savedX = savedArucoMarker[1][0]
-                savedY = savedArucoMarker[1][1]
-
+                savedID = savedArucoMarker[0] #Saved marker ID
+                savedX = savedArucoMarker[1][0] #Saved marker X-coordinate
+                savedY = savedArucoMarker[1][1] #Saved marker Y-coordinate
+                
+                #If the current detected marker ID matches the saved ID, mark it as 'used'
                 if currentID == savedID:
                     used = True
                     break
@@ -601,20 +612,28 @@ class ArucoMarker_Subscriber(object):
             arucoXtoRobot = msg.poses[index].position.x
             arucoYtoRobot = msg.poses[index].position.y
 
+            #If the marker is not already saved, calculate its global position and save it
             if not used:
+                #Calculate actual position by adding robot's odometry position
                 actualArucoX = arucoXtoRobot + self.S_Odom.get_X()
                 actualArucoY = arucoYtoRobot + self.S_Odom.get_Y()
 
+                #Save the marker ID and its global position along with a format string
                 self.arucoMarkersPoses.append([currentID, [actualArucoX, actualArucoY], "Aruco Marker -> ID: {ID} x: {X:.4f}, y: {Y:.4f}"])
-                self.totalArucoMarkers += 1
+                self.totalArucoMarkers += 1 #Increment total aruco markers detected
+
+                log("INFO", self.node, f"New Aruco Marker -> ID: {currentID}", True) #Log new marker detected
 
             else:
+                #If the marker is already saved, update its position by averaging the new and old positions
                 savedArucoMarker[1][0] = ((arucoXtoRobot + self.S_Odom.get_X()) + savedX)/2
                 savedArucoMarker[1][1] = ((arucoYtoRobot + self.S_Odom.get_Y()) + savedY)/2
 
+                #Log the updated position of the existing marker
                 log("INFO", self.node, f"New Aruco Marker -> ID: {currentID}, x: {savedArucoMarker[1][0]:.4f}, y: {savedArucoMarker[1][1]:.4f}", True)
 
     def print_aruco_poses(self):
+        #Loop through all saved Aruco markers and print their positions
         for marker in self.arucoMarkersPoses:
             formatString = marker[2]
             x = marker[1][0]
@@ -873,20 +892,44 @@ class Explorer(Node):
         return point
     
     def find_open_frontiers(self, radius: int) -> list[np.ndarray]:
+        """
+            Finds open frontiers within a specified radius.
+
+            Params:
+                radius (int): The radius within which to search for open frontiers.
+                            This defines the range in the occupancy map to search 
+                            for valid frontier points.
+
+            Returns:
+                list[np.ndarray]: A list of NumPy arrays representing valid frontiers 
+                                (waypoints) detected within the specified radius.
+        """
         openFrontiers = []
 
+        #Iterate through the occupancy grid data and check for valid waypoints
         for index in range(len(self.S_Map_Occupancy.get_data_array())):
             x, y = self.S_Map_Occupancy.array_index_to_cartesian(index) # convert occupancy grid index to cartesian co-ordinates 
             waypoint = self.create_waypoint_vector(x, y)
             waypointValid, cost = self.check_waypoint(x, y, True)
 
             if waypointValid:
-                openFrontiers.append(waypoint)
+                openFrontiers.append(waypoint) #Append valid waypoints to open frontiers
 
         return openFrontiers
 
     def bubble_sort_frontiers_by_distance_from_robot(self, openFrontiers: list[np.ndarray]) -> list[np.ndarray]:
-        # Inner loop to compare adjacent elements
+        """
+            Sorts the list of open frontiers based on their distance from the robot's current position using bubble sort.
+
+            Params:
+                openFrontiers (list[np.ndarray]): A list of NumPy arrays representing open frontiers (waypoints) 
+                                                that need to be sorted based on their distance from the robot.
+
+            Returns:
+                list[np.ndarray]: A sorted list of open frontiers by their distance from the robot, 
+                                with the closest frontier first.
+        """
+        #Inner loop to compare adjacent elements
         for n in range(len(openFrontiers) - 1, 0, -1):
             for i in range(n):
                 waypoint1Norm = np.linalg.norm(np.abs(openFrontiers[i] - self.robotPoseVector))
@@ -899,43 +942,58 @@ class Explorer(Node):
     
     
     def choose_frontier(self):
+        """
+            Chooses the next frontier waypoint for the robot to move to. If no open frontiers exist, it searches the occupancy grid.
+            
+            Returns:
+                waypoint: The chosen frontier waypoint as a vector.
+        """
         waypoint = EMPTY_WAYPOINT
 
+        #If there are no existing frontiers in the list
         if self.openFrontiers == []:
             log("INFO", self, "No existing frontiers: searching Occupncy grid...", self.debug)
+            #Find new open frontiers within a specified radius (e.g., 5 units)
             self.openFrontiers = self.find_open_frontiers(5)
             log("INFO", self, "Done!", self.debug)
             waypoint = self.choose_frontier()
         else:
             log("INFO", self, "Searching through existing frontiers", self.debug)
+            #Sort the frontiers based on their distance from the robot's current position
             self.openFrontiers = self.bubble_sort_frontiers_by_distance_from_robot(self.openFrontiers)
 
             frontierUsedArrayIndex = 0
+            #Iterate through the sorted open frontiers to find a valid waypoint
             for frontierUsedArrayIndex, frontier in enumerate(self.openFrontiers):
-                x, y = self.get_vector_data(frontier)
-                waypointValid, cost = self.check_waypoint(x, y, True)
+                x, y = self.get_vector_data(frontier) #Get the x and y values of the frontier
+                waypointValid, cost = self.check_waypoint(x, y, True) #Check if the waypoint is valid
 
                 if waypointValid:
+                    #If valid, set it as the current waypoint and save its cost
                     lowestCost = cost
                     waypoint = frontier
 
+                    #Search around the grid cell for a potentially better waypoint within a 6-cell radius
                     for index in self.S_Map_Occupancy.search_around_grid_cell(x, y, 6):
                         x, y = self.S_Map_Occupancy.array_index_to_cartesian(index)
                         waypointValid, cost = self.check_waypoint(x, y, True)
 
                         if waypointValid:
+                            #If a new valid waypoint has a lower cost, update the current waypoint and cost
                             if cost < lowestCost:
                                 lowestCost = cost
                                 waypoint = self.create_waypoint_vector(x, y)
                     break
-            
+            #After finding a valid frontier, update the list of remaining frontiers
             if frontierUsedArrayIndex < (len(self.openFrontiers) - 1):
+                #Remove the used frontier and keep the remaining ones
                 self.openFrontiers = self.openFrontiers[(frontierUsedArrayIndex + 1):]
             else:
+                #If all frontiers have been used, clear the list and search for new frontiers
                 self.openFrontiers = []
-                waypoint = self.choose_frontier()
+                waypoint = self.choose_frontier() #Recursively search for a new frontier if needed
 
-        return waypoint
+        return waypoint #Return the chosen waypoint
                 
 
     def chooseWaypoint(self, previousPathFailed: bool) -> None:
@@ -1019,7 +1077,7 @@ class Explorer(Node):
 
     def check_waypoint(self, x: float, y: float, stuck):
         """
-            checks frontier waypoint is valid 
+            checks waypoint is valid 
 
             Params: 
                 x -> pose of robot in x 
@@ -1048,7 +1106,7 @@ class Explorer(Node):
                 closeToCompleted = True
                 break
 
-        cost = self.S_Map_Global_Cost.average(x, y, 5) # get average cost of robots pose and 3 nearest points 
+        cost = self.S_Map_Global_Cost.average(x, y, 5) # get average cost of robots pose and 5 nearest points 
         
         if not stuck:
             notExplored = (self.S_Map_Occupancy.average(x, y, self.SEARCH_RADIUS) == -1)
