@@ -485,6 +485,17 @@ class OccupancyGrid_Subscriber(Subscriber_Map):
         return onFrontier
     
     def search_around_grid_cell(self, x, y, radius):
+        """
+            Searches for grid cells surrounding a specified (x, y) position within a given radius.
+
+            Params:
+                x (float): The x-coordinate of the grid cell around which the search is performed.
+                y (float): The y-coordinate of the grid cell around which the search is performed.
+                radius (int): The search radius in grid cells, defining the area to be explored around (x, y).
+
+            Returns:
+                list[int]: A list of indices corresponding to the neighboring grid cells within the radius.
+        """
         neighbouringGridCells = []
 
         for xSearch in range(-radius, radius):
@@ -500,8 +511,6 @@ class OccupancyGrid_Subscriber(Subscriber_Map):
                     neighbouringGridCells.append(index)
 
         return neighbouringGridCells
-
-
 
 
 
@@ -883,20 +892,44 @@ class Explorer(Node):
         return point
     
     def find_open_frontiers(self, radius: int) -> list[np.ndarray]:
+        """
+            Finds open frontiers within a specified radius.
+
+            Params:
+                radius (int): The radius within which to search for open frontiers.
+                            This defines the range in the occupancy map to search 
+                            for valid frontier points.
+
+            Returns:
+                list[np.ndarray]: A list of NumPy arrays representing valid frontiers 
+                                (waypoints) detected within the specified radius.
+        """
         openFrontiers = []
 
+        #Iterate through the occupancy grid data and check for valid waypoints
         for index in range(len(self.S_Map_Occupancy.get_data_array())):
             x, y = self.S_Map_Occupancy.array_index_to_cartesian(index) # convert occupancy grid index to cartesian co-ordinates 
             waypoint = self.create_waypoint_vector(x, y)
             waypointValid, cost = self.check_waypoint(x, y, True)
 
             if waypointValid:
-                openFrontiers.append(waypoint)
+                openFrontiers.append(waypoint) #Append valid waypoints to open frontiers
 
         return openFrontiers
 
     def bubble_sort_frontiers_by_distance_from_robot(self, openFrontiers: list[np.ndarray]) -> list[np.ndarray]:
-        # Inner loop to compare adjacent elements
+        """
+            Sorts the list of open frontiers based on their distance from the robot's current position using bubble sort.
+
+            Params:
+                openFrontiers (list[np.ndarray]): A list of NumPy arrays representing open frontiers (waypoints) 
+                                                that need to be sorted based on their distance from the robot.
+
+            Returns:
+                list[np.ndarray]: A sorted list of open frontiers by their distance from the robot, 
+                                with the closest frontier first.
+        """
+        #Inner loop to compare adjacent elements
         for n in range(len(openFrontiers) - 1, 0, -1):
             for i in range(n):
                 waypoint1Norm = np.linalg.norm(np.abs(openFrontiers[i] - self.robotPoseVector))
@@ -909,43 +942,58 @@ class Explorer(Node):
     
     
     def choose_frontier(self):
+        """
+            Chooses the next frontier waypoint for the robot to move to. If no open frontiers exist, it searches the occupancy grid.
+            
+            Returns:
+                waypoint: The chosen frontier waypoint as a vector.
+        """
         waypoint = EMPTY_WAYPOINT
 
+        #If there are no existing frontiers in the list
         if self.openFrontiers == []:
             log("INFO", self, "No existing frontiers: searching Occupncy grid...", self.debug)
+            #Find new open frontiers within a specified radius (e.g., 5 units)
             self.openFrontiers = self.find_open_frontiers(5)
             log("INFO", self, "Done!", self.debug)
             waypoint = self.choose_frontier()
         else:
             log("INFO", self, "Searching through existing frontiers", self.debug)
+            #Sort the frontiers based on their distance from the robot's current position
             self.openFrontiers = self.bubble_sort_frontiers_by_distance_from_robot(self.openFrontiers)
 
             frontierUsedArrayIndex = 0
+            #Iterate through the sorted open frontiers to find a valid waypoint
             for frontierUsedArrayIndex, frontier in enumerate(self.openFrontiers):
-                x, y = self.get_vector_data(frontier)
-                waypointValid, cost = self.check_waypoint(x, y, True)
+                x, y = self.get_vector_data(frontier) #Get the x and y values of the frontier
+                waypointValid, cost = self.check_waypoint(x, y, True) #Check if the waypoint is valid
 
                 if waypointValid:
+                    #If valid, set it as the current waypoint and save its cost
                     lowestCost = cost
                     waypoint = frontier
 
+                    #Search around the grid cell for a potentially better waypoint within a 6-cell radius
                     for index in self.S_Map_Occupancy.search_around_grid_cell(x, y, 6):
                         x, y = self.S_Map_Occupancy.array_index_to_cartesian(index)
                         waypointValid, cost = self.check_waypoint(x, y, True)
 
                         if waypointValid:
+                            #If a new valid waypoint has a lower cost, update the current waypoint and cost
                             if cost < lowestCost:
                                 lowestCost = cost
                                 waypoint = self.create_waypoint_vector(x, y)
                     break
-            
+            #After finding a valid frontier, update the list of remaining frontiers
             if frontierUsedArrayIndex < (len(self.openFrontiers) - 1):
+                #Remove the used frontier and keep the remaining ones
                 self.openFrontiers = self.openFrontiers[(frontierUsedArrayIndex + 1):]
             else:
+                #If all frontiers have been used, clear the list and search for new frontiers
                 self.openFrontiers = []
-                waypoint = self.choose_frontier()
+                waypoint = self.choose_frontier() #Recursively search for a new frontier if needed
 
-        return waypoint
+        return waypoint #Return the chosen waypoint
                 
 
     def chooseWaypoint(self, previousPathFailed: bool) -> None:
