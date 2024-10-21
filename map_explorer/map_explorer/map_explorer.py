@@ -585,15 +585,17 @@ class ArucoMarker_Subscriber(object):
             Params:
                 msg -> conatins data of the current poses and IDs of the detected aruco_marketrs
         """
-        
+        #Loop over detected Aruco Markers by index and ID
         for index, currentID in enumerate(msg.marker_ids):
             used = False
 
+            #Check if the current detected marker ID is already saved
             for savedArucoMarker in self.arucoMarkersPoses:
-                savedID = savedArucoMarker[0]
-                savedX = savedArucoMarker[1][0]
-                savedY = savedArucoMarker[1][1]
-
+                savedID = savedArucoMarker[0] #Saved marker ID
+                savedX = savedArucoMarker[1][0] #Saved marker X-coordinate
+                savedY = savedArucoMarker[1][1] #Saved marker Y-coordinate
+                
+                #If the current detected marker ID matches the saved ID, mark it as 'used'
                 if currentID == savedID:
                     used = True
                     break
@@ -601,20 +603,28 @@ class ArucoMarker_Subscriber(object):
             arucoXtoRobot = msg.poses[index].position.x
             arucoYtoRobot = msg.poses[index].position.y
 
+            #If the marker is not already saved, calculate its global position and save it
             if not used:
+                #Calculate actual position by adding robot's odometry position
                 actualArucoX = arucoXtoRobot + self.S_Odom.get_X()
                 actualArucoY = arucoYtoRobot + self.S_Odom.get_Y()
 
+                #Save the marker ID and its global position along with a format string
                 self.arucoMarkersPoses.append([currentID, [actualArucoX, actualArucoY], "Aruco Marker -> ID: {ID} x: {X:.4f}, y: {Y:.4f}"])
-                self.totalArucoMarkers += 1
+                self.totalArucoMarkers += 1 #Increment total aruco markers detected
+
+                log("INFO", self.node, f"New Aruco Marker -> ID: {currentID}", True) #Log new marker detected
 
             else:
+                #If the marker is already saved, update its position by averaging the new and old positions
                 savedArucoMarker[1][0] = ((arucoXtoRobot + self.S_Odom.get_X()) + savedX)/2
                 savedArucoMarker[1][1] = ((arucoYtoRobot + self.S_Odom.get_Y()) + savedY)/2
 
+                #Log the updated position of the existing marker
                 log("INFO", self.node, f"New Aruco Marker -> ID: {currentID}, x: {savedArucoMarker[1][0]:.4f}, y: {savedArucoMarker[1][1]:.4f}", True)
 
     def print_aruco_poses(self):
+        #Loop through all saved Aruco markers and print their positions
         for marker in self.arucoMarkersPoses:
             formatString = marker[2]
             x = marker[1][0]
